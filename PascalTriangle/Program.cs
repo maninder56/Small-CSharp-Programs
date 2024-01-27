@@ -1,11 +1,12 @@
 ﻿using System;
+using System.Security.Cryptography.X509Certificates;
 using static System.Console;
 
 internal class Program
 {
     private static void Main(string[] args)
     {
-        PascalTriangle(5);
+        PascalTriangle(6);
     }
 
     // print Pascal triangle upto given number 
@@ -35,7 +36,7 @@ internal class Program
         return result;
     }
 
-    // return Pascal row in string 
+    // return Pascal row as string 
     static string PascalRow(int rowNumber)
     {
         // add first assured number of row 
