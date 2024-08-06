@@ -1,2 +1,12 @@
-﻿// See https://aka.ms/new-console-template for more information
-Console.WriteLine("Hello, World!");
+﻿using System; 
+using static System.Console; 
+using System.Threading; 
+using GameLibrary;
+
+internal class Program
+{
+    private static void Main(string[] args)
+    {
+        
+    }
+}
