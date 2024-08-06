@@ -4,13 +4,13 @@ namespace GameLibrary;
 
 public class Game
 {
+    public Player player1 = new Player("A");
+    public Player player2 = new Player("B");
+    public Player Winner; 
     public bool IsMatchDraw;
 
-    private Player? GetPlayerWon() 
+    private Player GetPlayerWon() 
     {
-        Player player1 = new Player("A");
-        Player player2 = new Player("B");
-
         if (player1.hand == player2.hand)
         {
            IsMatchDraw = true;  
@@ -41,6 +41,8 @@ public class Game
 
         return new Player("None"); 
     }
+
+    public Game() => Winner = GetPlayerWon(); 
 
 
 
