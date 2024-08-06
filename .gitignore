@@ -1,0 +1,6 @@
+# Ignore the following folders 
+.vscode/
+bin/
+obj/
+Temporary/
+.vs/
