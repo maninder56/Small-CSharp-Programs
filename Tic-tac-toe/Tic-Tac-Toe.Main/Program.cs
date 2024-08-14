@@ -1,2 +1,11 @@
-﻿// See https://aka.ms/new-console-template for more information
-Console.WriteLine("Hello, World!");
+﻿using System; 
+using static System.Console; 
+using Tic_Tac_Toe.UI; 
+
+internal class Program
+{
+    private static void Main(string[] args)
+    {
+        MainMenu.UserOption(); 
+    }
+}
