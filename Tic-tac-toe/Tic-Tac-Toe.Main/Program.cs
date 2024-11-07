@@ -1,11 +1,12 @@
-﻿using System; 
-using static System.Console; 
-using Tic_Tac_Toe.UI; 
-
+﻿global using System; 
+global using static System.Console; 
+global using Game; 
+using Application; 
 internal class Program
 {
     private static void Main(string[] args)
     {
-        MainMenu.UserOption(); 
+        App app = new App();
+        app.Start(); 
     }
 }
