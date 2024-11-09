@@ -3,6 +3,8 @@ using System.Reflection.Metadata;
 
 namespace Game;
 
+// Note : add a class to only display the current state of applicatoin when reseting the grid 
+
 public static class UI
 {
     static string UserInput()
@@ -32,7 +34,7 @@ public static class UI
     }
     
     // Displays Play Area and grid 
-    public static string MainGameLoop(Grid grid)
+    public static string MainGameLoop(Grid grid, string playerName)
     {
         string gameHelp = """ 
             Please give a number BETWEEN 0 to 8 to place your turn. 
@@ -46,6 +48,7 @@ public static class UI
         WriteLine(); 
         WriteUserGrid(grid); 
         WriteLine();
+        WriteLine("Player: {0} ", playerName);
         Write("> "); 
 
         return UserInput(); 
@@ -56,12 +59,18 @@ public static class UI
     {
         bool?[] boxes = grid.Boxes; 
 
-        WriteLine("     User Grid" + new string(' ', 10) + "Reference Grid"); 
+        WriteLine("  User Grid" + new string(' ', 10) + "Reference Grid"); 
 
         for (int i=0; i <= 8; i +=3)
         {
-            Write("{0,-4} | {1,-4} | {2,-4}", boxes[i], boxes[i+1], boxes[i+2]); 
+            string position1 = (boxes[i] == true) ? "X" : (boxes[i] == false) ? "O" : " "; 
+            string position2 = (boxes[i+1] == true) ? "X" : (boxes[i+1] == false) ? "O" : " "; 
+            string position3 = (boxes[i+2] == true) ? "X" : (boxes[i+2] == false) ? "O" : " "; 
+
+            Write("{0,-2} | {1,-2} | {2,-2}", position1, position2, position3); 
+
             Write(new string(' ', 6)); 
+            
             WriteLine("{0,-2} | {1,-2} | {2,-2}", i, i+1, i+2); 
         }
     }
@@ -97,6 +106,13 @@ public static class Messages
         ResetColor(); 
     }
 
+    public static void WriteSmallMessage(ConsoleColor color, string message)
+    {
+        ForegroundColor = color; 
+        Write(message); 
+        ResetColor(); 
+    }
+
     public static void WriteStandardMessage(string message)
     {
         WriteMessage(MessageType.Standard, message); 
@@ -116,6 +132,7 @@ public static class Messages
     {
         WriteMessage(MessageType.BadInput, message); 
     }
+
 }  
 
 public enum MessageType { Standard, Good, Bad, BadInput }
