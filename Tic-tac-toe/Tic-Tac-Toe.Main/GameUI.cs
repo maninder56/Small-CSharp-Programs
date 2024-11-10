@@ -35,7 +35,7 @@ public static class UI
     public static string MainGameLoop(Grid grid, string playerName, Score score)
     {
         string gameHelp = """ 
-            Please give a number BETWEEN 0 to 8 to place your turn. 
+            Please give a number BETWEEN 1 to 9 to place your turn. 
             A reference Grid has been provided to let you known where 
             your turn will be places on the grid given a number.  
 
@@ -59,7 +59,7 @@ public static class UI
     public static void DisplayGameState(Grid grid, string playerName, Score score)
     {
         string gameHelp = """ 
-            Please give a number BETWEEN 0 to 8 to place your turn. 
+            Please give a number BETWEEN 1 to 9 to place your turn. 
             A reference Grid has been provided to let you known where 
             your turn will be places on the grid given a number. 
 
@@ -98,7 +98,7 @@ public static class UI
 
             Write(new string(' ', 6)); 
             
-            WriteLine("{0,-2} | {1,-2} | {2,-2}", i, i+1, i+2); 
+            WriteLine("{0,-2} | {1,-2} | {2,-2}", i+1, i+2, i+3); 
         }
     }
 }

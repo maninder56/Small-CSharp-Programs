@@ -32,6 +32,7 @@ public class Grid
     public void UpdatePosition(string userInput, bool player)
     {
         bool isNumber = int.TryParse(userInput, out int position);
+        position -= 1; 
 
         if (!isNumber)
         {
@@ -39,9 +40,9 @@ public class Grid
             return;
         }
         
-        if (position < -1 || position > 8)
+        if (position < 0 || position > 8) // check position needs to be in range of 0-8
         {
-            OnWrongInput(new WrongInputEventArgs("Only Numbers 0-8 are accepted.")); 
+            OnWrongInput(new WrongInputEventArgs("Only Numbers 1-9 are accepted.")); 
             return; 
         }
 

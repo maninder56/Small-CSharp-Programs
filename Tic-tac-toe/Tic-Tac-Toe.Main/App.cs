@@ -53,7 +53,7 @@ public class App
             score.draw += 1; 
             UI.DisplayGameState(grid, currentPlayerName(), score); 
 
-            Messages.WriteStandardMessage("The Match has resulted in Draw"); 
+            Messages.WriteBadMessage("The Match has resulted in Draw"); 
             Messages.WriteStandardMessage("Grid will be now reset"); 
             
             changeThefirstTurnOfTheGame(); 
