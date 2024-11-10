@@ -47,6 +47,7 @@ public class App
         int draw = 0;
 
         Grid grid = new Grid(); 
+
         grid.ChangeTurn += (object? sender, EventArgs e) => 
         {
            changeThePlayer(); 
@@ -57,12 +58,35 @@ public class App
             draw += 1; 
             
             Messages.WriteStandardMessage("The Match has resulted in Draw"); 
-            Messages.WriteStandardMessage("Grid will be new reset"); 
+            Messages.WriteStandardMessage("Grid will be now reset"); 
             
             changeThefirstTurnOfTheGame(); 
             currentTurn = firstTurnOfTheGame; 
             Messages.WriteStandardMessage($"In the next Game Player: {currentPlaterName()} will start the game."); 
 
+            Messages.WriteGoodMessage("Press Enter To Continue"); 
+            ReadLine(); 
+            grid.ResetGrid(); 
+        }; 
+
+        grid.PlayerWon += (object? sender, PlayerWonEventArgs e) => 
+        {
+            if (e.player)
+            {
+                player1Score += 1; 
+            }
+
+            if(!e.player)
+            {
+                player2Score +=1; 
+            }
+
+            Messages.WriteGoodMessage($"congratulation Player: {currentTurn} You have won!"); 
+            Messages.WriteStandardMessage("Grid will be now reset for Next Game."); 
+            
+            changeThefirstTurnOfTheGame(); 
+            currentTurn = firstTurnOfTheGame; 
+            Messages.WriteStandardMessage($"In the next Game Player: {currentPlaterName()} will start the game."); 
             Messages.WriteGoodMessage("Press Enter To Continue"); 
             ReadLine(); 
             grid.ResetGrid(); 
