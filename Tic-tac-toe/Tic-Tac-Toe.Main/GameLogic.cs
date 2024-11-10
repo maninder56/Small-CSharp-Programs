@@ -65,7 +65,6 @@ public class Grid
             // Win condition will be tested before braw condition
             if (successfullTurns >= 9 && AreAllThePositionsFilled())
             {
-                successfullTurns = 0; 
                 OnGridFilled(EventArgs.Empty); 
                 return; 
             }
@@ -82,6 +81,7 @@ public class Grid
             null, null, null,
             null, null, null
         }; 
+        successfullTurns = 0; 
     }
 
     bool AreAllThePositionsFilled()
@@ -183,4 +183,12 @@ public class PlayerWonEventArgs : EventArgs
     public bool player; 
 
     public PlayerWonEventArgs(bool player) => this.player = player; 
+}
+
+
+public class Score
+{
+    public int player1Score {get; set; } = 0; 
+    public int player2Score {get; set; } = 0; 
+    public int draw {get; set; } = 0;
 }

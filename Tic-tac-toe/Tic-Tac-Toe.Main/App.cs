@@ -1,5 +1,4 @@
 namespace Game; 
-// Note : Add a Scoring System to tell the user final score
 
 public class App 
 {
@@ -8,10 +7,7 @@ public class App
         bool quit = false; 
         while(!quit)
         {
-            // string userInput = UI.MainMenuOption(); 
-
-            // Temporary variable
-            string userInput = "Play";
+            string userInput = UI.MainMenuOption(); 
 
             switch (userInput)
             {
@@ -39,13 +35,12 @@ public class App
         void changeThePlayer() => currentTurn = (currentTurn == player1) ? player2 : player1;
         void changeThefirstTurnOfTheGame() => firstTurnOfTheGame = (firstTurnOfTheGame == player1) ? player2 : player1; 
 
-        string currentPlaterName() => (currentTurn == true) ? "X" : "O"; 
+        string currentPlayerName() => (currentTurn == true) ? "X" : "O"; 
 
         // Score 
-        int player1Score = 0; 
-        int player2Score = 0; 
-        int draw = 0;
-
+        Score score = new Score(); 
+    
+        // Game Grid
         Grid grid = new Grid(); 
 
         grid.ChangeTurn += (object? sender, EventArgs e) => 
@@ -55,14 +50,15 @@ public class App
 
         grid.GridFilled += (object? sender, EventArgs e) => 
         {
-            draw += 1; 
-            
+            score.draw += 1; 
+            UI.DisplayGameState(grid, currentPlayerName(), score); 
+
             Messages.WriteStandardMessage("The Match has resulted in Draw"); 
             Messages.WriteStandardMessage("Grid will be now reset"); 
             
             changeThefirstTurnOfTheGame(); 
             currentTurn = firstTurnOfTheGame; 
-            Messages.WriteStandardMessage($"In the next Game Player: {currentPlaterName()} will start the game."); 
+            Messages.WriteStandardMessage($"In the next Game Player: {currentPlayerName()} will start the game."); 
 
             Messages.WriteGoodMessage("Press Enter To Continue"); 
             ReadLine(); 
@@ -73,20 +69,22 @@ public class App
         {
             if (e.player)
             {
-                player1Score += 1; 
+                score.player1Score += 1; 
             }
 
             if(!e.player)
             {
-                player2Score +=1; 
+                score.player2Score +=1; 
             }
 
-            Messages.WriteGoodMessage($"congratulation Player: {currentTurn} You have won!"); 
+            UI.DisplayGameState(grid, currentPlayerName(), score); 
+
+            Messages.WriteGoodMessage($"congratulation Player: {currentPlayerName()} You have won!"); 
             Messages.WriteStandardMessage("Grid will be now reset for Next Game."); 
             
             changeThefirstTurnOfTheGame(); 
             currentTurn = firstTurnOfTheGame; 
-            Messages.WriteStandardMessage($"In the next Game Player: {currentPlaterName()} will start the game."); 
+            Messages.WriteStandardMessage($"In the next Game Player: {currentPlayerName()} will start the game."); 
             Messages.WriteGoodMessage("Press Enter To Continue"); 
             ReadLine(); 
             grid.ResetGrid(); 
@@ -97,7 +95,7 @@ public class App
         // Main Game loop 
         while(!quit)
         {
-            string userInput = UI.MainGameLoop(grid, currentPlaterName()); 
+            string userInput = UI.MainGameLoop(grid, currentPlayerName(), score); 
 
             switch(userInput)
             {

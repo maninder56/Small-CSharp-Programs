@@ -3,8 +3,6 @@ using System.Reflection.Metadata;
 
 namespace Game;
 
-// Note : add a class to only display the current state of applicatoin when reseting the grid 
-
 public static class UI
 {
     static string UserInput()
@@ -34,19 +32,22 @@ public static class UI
     }
     
     // Displays Play Area and grid 
-    public static string MainGameLoop(Grid grid, string playerName)
+    public static string MainGameLoop(Grid grid, string playerName, Score score)
     {
         string gameHelp = """ 
             Please give a number BETWEEN 0 to 8 to place your turn. 
             A reference Grid has been provided to let you known where 
             your turn will be places on the grid given a number.  
+
+            To Exit this Match Type 'Quit'. 
+            Exiting the Match will Reset the Score. 
             """; 
 
         Clear(); 
         WriteLine(); 
         WriteLine(gameHelp); 
         WriteLine(); 
-        WriteUserGrid(grid); 
+        WriteUserGridAndScore(grid, score); 
         WriteLine();
         WriteLine("Player: {0} ", playerName);
         Write("> "); 
@@ -55,11 +56,37 @@ public static class UI
 
     }
 
-    static void WriteUserGrid(Grid grid)
+    public static void DisplayGameState(Grid grid, string playerName, Score score)
+    {
+        string gameHelp = """ 
+            Please give a number BETWEEN 0 to 8 to place your turn. 
+            A reference Grid has been provided to let you known where 
+            your turn will be places on the grid given a number. 
+
+            To Exit this Match Type 'Quit'. 
+            Exiting the Match will Reset the Score. 
+            """; 
+
+            Clear(); 
+            WriteLine(); 
+            WriteLine(gameHelp); 
+            WriteLine(); 
+            WriteUserGridAndScore(grid, score); 
+            WriteLine();
+            WriteLine("Player: {0} ", playerName);
+            Write("> "); 
+    }
+
+    static void WriteUserGridAndScore(Grid grid, Score score)
     {
         bool?[] boxes = grid.Boxes; 
 
-        WriteLine("  User Grid" + new string(' ', 10) + "Reference Grid"); 
+        WriteLine($"Score: "); 
+        WriteLine("  X  |  O  |  Draw  "); 
+        WriteLine("  {0,-2} |  {1,-2} |  {2,2}", score.player1Score, score.player2Score, score.draw); 
+        WriteLine(); 
+
+        WriteLine("  User Grid" + new string(' ', 6) + "Reference Grid"); 
 
         for (int i=0; i <= 8; i +=3)
         {
