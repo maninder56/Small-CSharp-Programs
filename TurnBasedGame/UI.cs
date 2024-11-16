@@ -1,7 +1,14 @@
+using System.Globalization;
+
 namespace Game; 
 
 public static class UI 
 {
+    // Explain the basic rules of hte game
+    static string rules = """
+        Explain the basic rules of hte game
+    """; 
+
     static string UserInput()
     {
         string userInput = ReadLine() ?? "";
@@ -11,17 +18,20 @@ public static class UI
     // Displays Main menu 
     public static string MainMenuOption()
     {
-        // Fix the padding and add section to display rule of the game
         string appName = "The Hunt"; 
 
         Clear();
         WriteLine();
-        WriteLine(appName.PadLeft(20)); 
+
+        CustomMessages.WriteTitle(appName.PadLeft(11)); 
         WriteLine();
-        Messages.WriteStandardMessage("Main Menu".PadLeft(19)); 
+
+        CustomMessages.WriteStandardMessage("Main Menu".PadLeft(12)); 
         WriteLine(); 
+
         WriteLine("Welcome to The Hunt"); 
         WriteLine();
+
         WriteLine("To Play Enter 'Play'"); 
         WriteLine("To Exit Enter 'Quit'"); 
         Write("> "); 
@@ -29,24 +39,68 @@ public static class UI
         return UserInput(); 
     }
 
-    public static string MainGameLoop()
+    public static string ShowGameMatchAndGetUerInput(MatchStatus matchStatus)
     {
         // Display main game area via a method that takes 
         // player and enemy's stats 
 
-        return UserInput(); 
+        Clear(); 
+        WriteLine(); 
 
+        WriteLine($"Rules: {rules}"); 
+        WriteLine(new string('-', WindowWidth-10).PadLeft(WindowWidth-5)); 
+        WriteLine(); 
+
+        // Temporary, Simple show of stats of enemy and player 
+        WriteLine("Enemy Stats: "); 
+        WriteLine($"Health: {matchStatus.enemy.Health}"); 
+        WriteLine(); 
+
+        WriteLine("Player's Stats: "); 
+        WriteLine($"Health: {matchStatus.player.Health}"); 
+        WriteLine($"Attack: {matchStatus.player.Attack}"); 
+        WriteLine($"Defence: {matchStatus.player.Defence}"); 
+        WriteLine("Action Point: 1"); 
+        WriteLine(); 
+
+        WriteLine("Your Turn: "); 
+        Write(">"); 
+        return UserInput(); 
+    }
+
+    public static void ShowGameMatch(MatchStatus matchStatus)
+    {
+        
+        Clear(); 
+        WriteLine(); 
+
+        WriteLine($"Rules: {rules}"); 
+        WriteLine(new string('-', WindowWidth-10).PadLeft(WindowWidth-5)); 
+        WriteLine(); 
+
+        // Temporary, Simple show of stats of enemy and player 
+        WriteLine("Enemy Stats: "); 
+        WriteLine($"Health: {matchStatus.enemy.Health}"); 
+        WriteLine(); 
+
+        WriteLine("Player's Stats: "); 
+        WriteLine($"Health: {matchStatus.player.Health}"); 
+        WriteLine($"Attack: {matchStatus.player.Attack}"); 
+        WriteLine($"Defence: {matchStatus.player.Defence}"); 
+        WriteLine("Action Point: 1"); 
+        WriteLine();
     }
 }
 
-public static class Messages
+// class to build custom messages
+public static class CustomMessages
 {
     static ConsoleColor MessageKind(MessageType type)
     {
         switch(type)
         {
             case MessageType.Standard: 
-            return ConsoleColor.Blue; 
+            return ConsoleColor.DarkBlue; 
 
             case MessageType.Good: 
             return ConsoleColor.Green; 
@@ -56,6 +110,9 @@ public static class Messages
 
             case MessageType.BadInput: 
             return ConsoleColor.DarkYellow; 
+
+            case MessageType.Title: 
+            return ConsoleColor.Magenta; 
 
             default: 
             return ConsoleColor.Gray;   
@@ -106,6 +163,26 @@ public static class Messages
         WriteMessage(MessageType.BadInput, message); 
     }
 
+    public static void WriteTitle(string title)
+    {
+        WriteMessage(MessageType.Title, title); 
+    }
+
 }  
 
-public enum MessageType { Standard, Good, Bad, BadInput }
+public enum MessageType { Standard, Good, Bad, BadInput, Title }
+
+
+
+// Prebuild messages
+public class MessageNotifications
+{
+    public static void WrongMainMenuUserInput()
+    {
+        CustomMessages.WriteBadInputMessage("You only have two Options"); 
+        WriteLine("Press Enter"); 
+        ReadLine(); 
+    }
+}
+
+
