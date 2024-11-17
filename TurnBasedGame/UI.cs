@@ -44,24 +44,7 @@ public static class UI
         // Display main game area via a method that takes 
         // player and enemy's stats 
 
-        Clear(); 
-        WriteLine(); 
-
-        WriteLine($"Rules: {rules}"); 
-        WriteLine(new string('-', WindowWidth-10).PadLeft(WindowWidth-5)); 
-        WriteLine(); 
-
-        // Temporary, Simple show of stats of enemy and player 
-        WriteLine("Enemy Stats: "); 
-        WriteLine($"Health: {matchStatus.enemy.Health}"); 
-        WriteLine(); 
-
-        WriteLine("Player's Stats: "); 
-        WriteLine($"Health: {matchStatus.player.Health}"); 
-        WriteLine($"Attack: {matchStatus.player.Attack}"); 
-        WriteLine($"Defence: {matchStatus.player.Defence}"); 
-        WriteLine("Action Point: 1"); 
-        WriteLine(); 
+        ShowGameMatch(matchStatus); 
 
         WriteLine("Your Turn: "); 
         Write(">"); 
@@ -87,7 +70,7 @@ public static class UI
         WriteLine($"Health: {matchStatus.player.Health}"); 
         WriteLine($"Attack: {matchStatus.player.Attack}"); 
         WriteLine($"Defence: {matchStatus.player.Defence}"); 
-        WriteLine("Action Point: 1"); 
+        WriteLine($"Save Point: {matchStatus.player.Save + 1}"); 
         WriteLine();
     }
 }

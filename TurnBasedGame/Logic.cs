@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Globalization;
 using System.Runtime.CompilerServices;
 using System.Security.Cryptography;
 
@@ -24,61 +25,69 @@ public class Match
         // Note for future implementation: count how many A and D you get to inclrease the attck or defence 
         // first count the defence and then attack 
 
-        bool isInputValid = IsInputValid(userInput, out char? playerMove); 
+        bool isInputValid = IsInputValid(userInput, out char[] playerMove); 
 
         if (!isInputValid)
         {
-            OnBadInput(new BadInputMessage("Please Only use 'A' for Attack and 'D' for Defence")); 
             return; 
         }
 
-        if (playerMove == 'A')
-        {
-            enemy.GotAttacked(player.Attack); 
+        
 
-            if (enemy.Health <= 0)
-            {
-                OnPlayerWon(EventArgs.Empty); 
-            }
-            return; 
-        }
 
-        if (enemy.Health <= 0)
-        {
-            OnPlayerWon(EventArgs.Empty); 
-            return; 
-        }
 
-        if (playerMove == 'D')
-        {
-            WriteLine("not implemented"); ReadLine(); 
-            return;
-        }
 
         
 
     }
 
-    bool IsInputValid(string userInput, out char? currentMove)
+    bool IsInputValid(string userInput, out char[] currentMove)
     {
         char[] moves = userInput.ToCharArray(); 
-        currentMove = null; 
+        currentMove = new char[moves.Length]; 
 
-        if (moves.Length > 1)
+        if (moves.Length > 3)
         {
+            OnBadInput(new BadInputMessage("You can only have Maximum of 3 moves")); 
             return false; 
         }
 
-        switch(moves[0])
+        for(int i=0; i < moves.Length; i++)
         {
-            case 'A':
-            case 'D': 
-            currentMove = moves[0]; 
+            switch(moves[i])
+            {
+                case 'A':
+                case 'D': 
+                case 'S': 
+                currentMove[i] = moves[i]; 
+                break; 
+
+                default: // user input contains other characters 
+                OnBadInput(new BadInputMessage("Please Only use 'A' for Attack, 'D' for Defence and 'S' for Save")); 
+                return false; 
+            }
+        }
+
+        if (!CanPlayerMakeMoreMoves(player, currentMove.Length))
+        {
+            OnBadInput(new BadInputMessage($"You have only have {player.Save + 1} Save points to paly.")); 
+            return false;    
+        }
+        
+        return true; 
+    }
+
+
+    bool CanPlayerMakeMoreMoves(Player player, int totalMoves)
+    {
+        if (player.Save + 1 >= totalMoves)
+        {
             return true; 
         }
 
         return false; 
     }
+
 
 
     public void MatchRestart()
@@ -117,6 +126,7 @@ public class Player
     int health = 100; 
     int attack = 40; 
     int defence = 30; 
+    int save = 0; 
 
     // for later implementation 
     // int attackPoint = 0; 
@@ -135,6 +145,23 @@ public class Player
     {
         get => defence; 
     }
+
+    public int Save 
+    {
+        get => save; 
+    }
+
+    public void AddSingleSave()
+    {
+        if (save + 1 > 2)
+        {
+            return; 
+        }
+
+        save += 1;  
+    }
+
+
 
     public void GotAttacked(int attackPower)
     {
