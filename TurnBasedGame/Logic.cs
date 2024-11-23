@@ -8,8 +8,13 @@ namespace Game;
 public class Match 
 {
     // player properties 
-    public Player player = new Player(); 
-    public Enemy enemy = new Enemy(); 
+    private PlayerClass privatePlayer = new PlayerClass(); 
+    private EnemyClass privateEnemy = new EnemyClass(); 
+
+    public PlayerClass Player => privatePlayer; 
+    public EnemyClass Enemy => privateEnemy; 
+
+
 
     // Events 
     public event EventHandler<BadInputMessage>? BadInput;
@@ -31,6 +36,10 @@ public class Match
         {
             return; 
         }
+
+
+
+        
 
         
 
@@ -68,9 +77,9 @@ public class Match
             }
         }
 
-        if (!CanPlayerMakeMoreMoves(player, currentMove.Length))
+        if (!CanPlayerMakeMoreMoves(privatePlayer, currentMove.Length))
         {
-            OnBadInput(new BadInputMessage($"You have only have {player.Save + 1} Save points to paly.")); 
+            OnBadInput(new BadInputMessage($"You have only have {privatePlayer.Save + 1} Save points to paly.")); 
             return false;    
         }
         
@@ -78,7 +87,7 @@ public class Match
     }
 
 
-    bool CanPlayerMakeMoreMoves(Player player, int totalMoves)
+    bool CanPlayerMakeMoreMoves(PlayerClass player, int totalMoves)
     {
         if (player.Save + 1 >= totalMoves)
         {
@@ -88,12 +97,54 @@ public class Match
         return false; 
     }
 
+    void PlayCurrentTurn(char[] playerMove, char[] enemyMove)
+    {
+        // Total Attack, Defence and savePoint of Player 
+
+    }
+
+    (int totalAttack, int totalDefence, int totalSave) TotalADS(char[] moves)
+    {
+        int numberofAttack = moves.Select(c => c == 'A').Count();
+        int numberOfDefence = moves.Select(c => c == 'D').Count();
+        int numberOfSave = moves.Select(c => c == 'S').Count();
+
+        int totalAttack; 
+        int totalDefence; 
+        int totalSave; 
+
+        if (numberofAttack > 0)
+        {
+            totalAttack = privatePlayer.Attack; 
+
+            // multipliers will be addes to the rest of the attacts
+            if (numberofAttack > 1)
+            {
+                
+            }
+        }
+
+        int AddMultiplier(int numberOfAttacksOrDefences, int attackOrDefencePower)
+        {
+            double multipliers = 0.4; 
+            int totalAttack;
+
+            for(int i=0; i < numberOfAttacksOrDefences; i++)
+            {
+
+            }
+        }
+
+
+
+        return (a, d, s); 
+    }
 
 
     public void MatchRestart()
     {
-        player = new Player(); 
-        enemy = new Enemy(); 
+        privatePlayer = new PlayerClass(); 
+        privateEnemy = new EnemyClass(); 
     }
 }
 
@@ -110,72 +161,54 @@ public class BadInputMessage : EventArgs
 // To send Match Information to the UI class 
 public class MatchStatus 
 {
-    public Player player; 
-    public Enemy enemy; 
+    public readonly PlayerClass player; 
+    public readonly EnemyClass enemy; 
 
     public MatchStatus(Match match)
     {
-        player = match.player; 
-        enemy = match.enemy; 
+        player = match.Player;  
+        enemy = match.Enemy; 
     }
 }
 
 
-public class Player
+public class PlayerClass
 {
     int health = 100; 
     int attack = 40; 
     int defence = 30; 
     int save = 0; 
 
-    // for later implementation 
+    // for later implementation, change the save to ->
     // int attackPoint = 0; 
 
-    public int Attack 
-    { 
-        get => attack; 
-    }
+    public int Attack => attack; 
 
-    public int Health 
-    {
-        get => health; 
-    }
+    public int Health => health; 
 
-    public int Defence
-    {
-        get => defence; 
-    }
+    public int Defence => defence; 
 
-    public int Save 
-    {
-        get => save; 
-    }
+    public int Save => save; 
 
-    public void AddSingleSave()
+    public bool TryToAddSingleSave()
     {
         if (save + 1 > 2)
         {
-            return; 
+            return false; 
         }
 
         save += 1;  
+        return true; 
     }
 
-
-
-    public void GotAttacked(int attackPower)
+    public void GotAttacked(int totalAttack, int totalDefence)
     {
-        health -= attackPower; 
-        
-        if (health < 0)
+        int reducedAttack = totalAttack - totalDefence; 
+
+        if (totalDefence >= totalAttack)
         {
-            health = 0; 
+            reducedAttack = 0;  
         }
-    }
-
-    public void GotAttackedWithDefence(int attackPower)
-    {
-        int reducedAttack = defence - attack; 
 
         health -= Math.Abs(reducedAttack); 
         
@@ -186,7 +219,7 @@ public class Player
     }
 }
 
-public class Enemy : Player 
+public class EnemyClass : PlayerClass 
 {
     Random random = new Random(); 
     
@@ -205,3 +238,4 @@ public class Enemy : Player
 
     }
 }
+
