@@ -38,12 +38,17 @@ public class App
 
         // Assign event subscribers for notifications 
         match.BadInput += AppNotifications.InvalidInput; 
-        match.PlayerWon += (object? sender, EventArgs e) => UI.ShowGameMatch(new MatchStatus(match)); 
-        match.PlayerWon += AppNotifications.PlayerWon; 
 
         // When player winds the match
+        match.PlayerWon += (object? sender, EventArgs e) => UI.ShowGameMatch(new MatchStatus(match)); 
+        match.PlayerWon += AppNotifications.PlayerWon; 
         match.PlayerWon += (object? sender, EventArgs e ) => match.MatchRestart(); 
         
+        // When player loses 
+        match.PlayerLost += (object? sender, EventArgs e) => UI.ShowGameMatch(new MatchStatus(match)); 
+        match.PlayerLost += AppNotifications.PlayerLost; 
+        match.PlayerLost += (object? sender, EventArgs e) => match.MatchRestart(); 
+
 
         // Main Game loop 
         while(!quit)
@@ -82,4 +87,12 @@ public class AppNotifications
         WriteLine("Press Enter to restart"); 
         ReadLine(); 
     }
+
+    public static void PlayerLost(object? sender, EventArgs e)
+    {
+        CustomMessages.WriteBadMessage("You have lost the match."); 
+        WriteLine("Press Enter to restart"); 
+        ReadLine(); 
+    }
+
 }

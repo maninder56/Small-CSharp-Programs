@@ -2,6 +2,7 @@ using System.Diagnostics;
 using System.Globalization;
 using System.Runtime.CompilerServices;
 using System.Security.Cryptography;
+using System.Security.Principal;
 
 namespace Game; 
 
@@ -19,9 +20,11 @@ public class Match
     // Events 
     public event EventHandler<BadInputMessage>? BadInput;
     public event EventHandler? PlayerWon;  
+    public event EventHandler? PlayerLost; 
 
     protected virtual void OnBadInput(BadInputMessage e) => BadInput?.Invoke(this, e); 
     protected virtual void OnPlayerWon(EventArgs e) => PlayerWon?.Invoke(this, e); 
+    protected virtual void OnPlayerLost(EventArgs e) => PlayerLost?.Invoke(this, e); 
 
 
 
@@ -37,16 +40,7 @@ public class Match
             return; 
         }
 
-
-
-        
-
-        
-
-
-
-
-        
+        PlayCurrentTurn(playerMove, privateEnemy.GetEnemyMove().ToString().ToCharArray()); 
 
     }
 
@@ -99,46 +93,140 @@ public class Match
 
     void PlayCurrentTurn(char[] playerMove, char[] enemyMove)
     {
-        // Total Attack, Defence and savePoint of Player 
+        // Total Attack, Defence and savePoint of Player
+        (int totalAttack, int totalDefence, int totalSave) calculatedPlayerMoves = TotalPlayerADS(playerMove); 
+        (int totalAttack, int totalDefence, int totalSave) calculatedEnemyMoves = TotalEnemyADS(enemyMove); 
+
+        // Total Damage taken By Player
+        privatePlayer.GotAttacked(calculatedEnemyMoves.totalAttack, calculatedPlayerMoves.totalDefence); 
+        
+        // Check Player's health 
+        if (privatePlayer.Health <= 0 )
+        {
+            OnPlayerLost(EventArgs.Empty); 
+            return; 
+        }
+
+
+        // Total Damage taken by Enemy 
+        privateEnemy.GotAttacked(calculatedPlayerMoves.totalAttack, calculatedEnemyMoves.totalDefence); 
+
+        if (privateEnemy.Health <= 0)
+        {
+            OnPlayerWon(EventArgs.Empty); 
+            return; 
+        }
+
 
     }
 
-    (int totalAttack, int totalDefence, int totalSave) TotalADS(char[] moves)
+    (int totalAttack, int totalDefence, int totalSave) TotalPlayerADS(char[] moves)
     {
-        int numberofAttack = moves.Select(c => c == 'A').Count();
-        int numberOfDefence = moves.Select(c => c == 'D').Count();
-        int numberOfSave = moves.Select(c => c == 'S').Count();
+        int numberofAttack = moves.Where(c => c == 'A').Count();
+        int numberOfDefence = moves.Where(c => c == 'D').Count();
+        int numberOfSave = moves.Where(c => c == 'S').Count();
 
-        int totalAttack; 
-        int totalDefence; 
-        int totalSave; 
+        int totalAttack = 0; 
+        int totalDefence = 0; 
+        int totalSave = numberOfSave; 
 
+        // Check how many times player uses Attack and add multiplier
         if (numberofAttack > 0)
         {
             totalAttack = privatePlayer.Attack; 
 
-            // multipliers will be addes to the rest of the attacts
+            // a multipliers will be added to the rest of the attacts
             if (numberofAttack > 1)
             {
-                
+                totalAttack += AddMultiplier(numberofAttack, privatePlayer.Attack); 
             }
         }
 
-        int AddMultiplier(int numberOfAttacksOrDefences, int attackOrDefencePower)
+
+        // Check for the number of times plyaer uses defence
+        if (numberOfDefence > 0)
+        {
+            totalDefence = privatePlayer.Defence; 
+
+            
+            if (numberOfDefence > 1)
+            {
+                totalDefence += AddMultiplier(numberOfDefence, privatePlayer.Defence); 
+            }
+        }
+
+        int AddMultiplier(int numberOfAttacksOrDefences, int baseNumber)
         {
             double multipliers = 0.4; 
-            int totalAttack;
+            double totalAttackorDefenceAfterBaseAttack = baseNumber; 
 
             for(int i=0; i < numberOfAttacksOrDefences; i++)
             {
+                privatePlayer.TakeSavePoint(); 
+                totalAttackorDefenceAfterBaseAttack *= (int)multipliers; 
+            }
 
+            return (int)totalAttackorDefenceAfterBaseAttack; 
+        }
+
+        Debug.WriteLine("Attack: {0}, Defence: {1}, save : {2}", totalAttack, totalDefence, totalSave); 
+
+        return (totalAttack, totalDefence, totalSave); 
+    }
+
+
+    (int totalAttack, int totalDefence, int totalSave) TotalEnemyADS(char[] moves)
+    {
+        int numberofAttack = moves.Where(c => c == 'A').Count();
+        int numberOfDefence = moves.Where(c => c == 'D').Count();
+        int numberOfSave = moves.Where(c => c == 'S').Count();
+
+        int totalAttack = 0; 
+        int totalDefence = 0; 
+        int totalSave = numberOfSave; 
+
+        // Check how many times player uses Attack and add multiplier
+        if (numberofAttack > 0)
+        {
+            totalAttack = privateEnemy.Attack; 
+
+            // a multipliers will be added to the rest of the attacts
+            if (numberofAttack > 1)
+            {
+                totalAttack += AddMultiplier(numberofAttack, privateEnemy.Attack); 
             }
         }
 
 
+        // Check for the number of times plyaer uses defence
+        if (numberOfDefence > 0)
+        {
+            totalDefence = privateEnemy.Defence; 
 
-        return (a, d, s); 
+            
+            if (numberOfDefence > 1)
+            {
+                totalDefence += AddMultiplier(numberOfDefence, privateEnemy.Defence); 
+            }
+        }
+
+        int AddMultiplier(int numberOfAttacksOrDefences, int baseNumber)
+        {
+            double multipliers = 0.4; 
+            double totalAttackorDefenceAfterBaseAttack = baseNumber; 
+
+            for(int i=0; i < numberOfAttacksOrDefences; i++)
+            {
+                privateEnemy.TakeSavePoint(); 
+                totalAttackorDefenceAfterBaseAttack *= (int)multipliers; 
+            }
+
+            return (int)totalAttackorDefenceAfterBaseAttack; 
+        }
+
+        return (totalAttack, totalDefence, totalSave); 
     }
+
 
 
     public void MatchRestart()
@@ -201,11 +289,22 @@ public class PlayerClass
         return true; 
     }
 
-    public void GotAttacked(int totalAttack, int totalDefence)
+    public void TakeSavePoint()
     {
-        int reducedAttack = totalAttack - totalDefence; 
+        if (save - 1 >= 0)
+        {
+            save -= 1; 
+        }
+    }
 
-        if (totalDefence >= totalAttack)
+    public void GotAttacked(int totalAttackRecieved, int totalDefenceMaintained)
+    {
+        Debug.WriteLine("totalAttacRecieved: {0}, totalDefence Minatained:{1}", totalAttackRecieved, totalDefenceMaintained); 
+        int reducedAttack = totalAttackRecieved - totalDefenceMaintained; 
+
+        Debug.WriteLine("reduced Attack : {0}", reducedAttack); 
+
+        if (totalDefenceMaintained >= totalAttackRecieved)
         {
             reducedAttack = 0;  
         }
