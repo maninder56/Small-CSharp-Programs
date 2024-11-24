@@ -6,7 +6,18 @@ public static class UI
 {
     // Explain the basic rules of hte game
     static string rules = """
-        Explain the basic rules of hte game
+    You can Choose three Moves That are Attack (A), Defence (D), and Save (S). 
+
+    Attack  : Reduces Enemy's Health.
+
+    Defence : Can protect you from Enemy's Attack.
+    
+    Save    : To Save your Turn Point to use it in next turn. 
+              Using a save in next turn will add multiplier which means, 
+              Your Attack will deal more damage and defence will be much stronger!
+              However, using Save will leave you defenceless. 
+
+             You can only stack up to 3 save points. 
     """; 
 
     static string UserInput()
@@ -63,14 +74,16 @@ public static class UI
 
         // Temporary, Simple show of stats of enemy and player 
         WriteLine("Enemy Stats: "); 
-        WriteLine($"Health: {matchStatus.enemy.Health}"); 
+        WriteLine($"Health: {matchStatus.Enemy.Health}"); 
+        WriteLine($"Save Point: {matchStatus.Enemy.Save + 1}"); 
+         
         WriteLine(); 
 
         WriteLine("Player's Stats: "); 
-        WriteLine($"Health: {matchStatus.player.Health}"); 
-        WriteLine($"Attack: {matchStatus.player.Attack}"); 
-        WriteLine($"Defence: {matchStatus.player.Defence}"); 
-        WriteLine($"Save Point: {matchStatus.player.Save + 1}"); 
+        WriteLine($"Health: {matchStatus.Player.Health}"); 
+        WriteLine($"Attack: {matchStatus.Player.Attack}"); 
+        WriteLine($"Defence: {matchStatus.Player.Defence}"); 
+        WriteLine($"Save Point: {matchStatus.Player.Save + 1}"); 
         WriteLine();
     }
 }
@@ -114,6 +127,13 @@ public static class CustomMessages
         ResetColor(); 
     }
 
+    static void WriteMessageOneline(MessageType type, string message)
+    {
+        ForegroundColor = MessageKind(type); 
+        Write(message); 
+        ResetColor(); 
+    }
+
     /// <summary>
     /// Message gets written without next line
     /// </summary>
@@ -134,6 +154,11 @@ public static class CustomMessages
     public static void WriteBadMessage(string message)
     {
         WriteMessage(MessageType.Bad, message); 
+    }
+
+    public static void WriteBadMessageOneLine(string message)
+    {
+        WriteMessageOneline(MessageType.Bad, message); 
     }
 
     public static void WriteGoodMessage(string message)

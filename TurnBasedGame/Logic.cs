@@ -3,6 +3,7 @@ using System.Globalization;
 using System.Runtime.CompilerServices;
 using System.Security.Cryptography;
 using System.Security.Principal;
+using System.Xml.XPath;
 
 namespace Game; 
 
@@ -38,7 +39,7 @@ public class Match
             return; 
         }
 
-        PlayCurrentTurn(playerMove, privateEnemy.GetEnemyMove().ToString().ToCharArray()); 
+        PlayCurrentTurn(playerMove, privateEnemy.GetEnemyMove()); 
 
     }
 
@@ -107,10 +108,22 @@ public class Match
             OnBadInput(new BadInputMessage("You can not add more save points")); 
             return; 
         }
+
+        if (!privateEnemy.TryToAddAllSavePoints(calculatedEnemyMoves.totalSave))
+        {
+            OnBadInput(new BadInputMessage("Enemy has played an illegal move, got more SAVE")); 
+            return; 
+        }
         
 
         // Total Damage taken By Player
         privatePlayer.GotAttacked(calculatedEnemyMoves.totalAttack, calculatedPlayerMoves.totalDefence); 
+
+        // Reveal Enemy's Move 
+        CustomMessages.WriteBadMessageOneLine("\nEnemy's Choise: ");
+        Array.ForEach(Enemy.EnemyChoise, Write);
+        WriteLine("\nPress Enter To See the result."); 
+        ReadLine(); 
         
         // Check Player's health 
         if (privatePlayer.Health <= 0 )
@@ -128,6 +141,8 @@ public class Match
             OnPlayerWon(EventArgs.Empty); 
             return; 
         }
+
+
 
 
     }
@@ -150,7 +165,7 @@ public class Match
             // a multipliers will be added to the rest of the attacts
             if (numberofAttack > 1)
             {
-                totalAttack += AddMultiplier(numberofAttack, privatePlayer.Attack); 
+                totalAttack += AddMultiplier(numberofAttack-1, privatePlayer.Attack); // -1 so that only second choice has multiplier
             }
         }
 
@@ -163,7 +178,7 @@ public class Match
             
             if (numberOfDefence > 1)
             {
-                totalDefence += AddMultiplier(numberOfDefence, privatePlayer.Defence); 
+                totalDefence += AddMultiplier(numberOfDefence-1, privatePlayer.Defence); 
             }
         }
 
@@ -205,7 +220,7 @@ public class Match
             // a multipliers will be added to the rest of the attacts
             if (numberofAttack > 1)
             {
-                totalAttack += AddMultiplier(numberofAttack, privateEnemy.Attack); 
+                totalAttack += AddMultiplier(numberofAttack -1, privateEnemy.Attack); 
             }
         }
 
@@ -218,7 +233,7 @@ public class Match
             
             if (numberOfDefence > 1)
             {
-                totalDefence += AddMultiplier(numberOfDefence, privateEnemy.Defence); 
+                totalDefence += AddMultiplier(numberOfDefence -1, privateEnemy.Defence); 
             }
         }
 
@@ -261,13 +276,13 @@ public class BadInputMessage : EventArgs
 // To send Match Information to the UI class 
 public class MatchStatus 
 {
-    public readonly PlayerClass player; 
-    public readonly EnemyClass enemy; 
+    public readonly PlayerClass Player; 
+    public readonly EnemyClass Enemy; 
 
     public MatchStatus(Match match)
     {
-        player = match.Player;  
-        enemy = match.Enemy; 
+        Player = match.Player;  
+        Enemy = match.Enemy; 
     }
 }
 
@@ -275,8 +290,8 @@ public class MatchStatus
 public class PlayerClass
 {
     int health = 100; 
-    int attack = 40; 
-    int defence = 30; 
+    int attack = 20; 
+    int defence = 20; 
     int save = 0; 
 
     // for later implementation, change the save to ->
@@ -347,18 +362,59 @@ public class EnemyClass : PlayerClass
 {
     // Make a event to notify what move enemy has choosen. 
     Random random = new Random(); 
+
+    char[] enemyChoise = new char[3];
+
+    public char[] EnemyChoise => enemyChoise; 
     
-    public char GetEnemyMove()
+    public char[] GetEnemyMove()
     {
-        int move = random.Next(0,2); 
+        char[] result = new char[3]; 
 
-        switch (move)
+        for(int i=0; i < Save +1; i++)
         {
-            case 0: 
-            return 'A'; 
+            result[i] = GetChoice(3); 
+            
+            // if enemy has 2 save points 
+            if(result[0] == 'S' && Save+1 == 2 && i == 1)
+            {
+                result[i] = GetChoice(2); 
+            }
 
-            default: 
-            return 'D'; 
+            if (result[0] != 'S' && Save+1 == 2 && i == 1)
+            {
+                result[i] = GetChoice(3); 
+            }
+
+            // if enemy has 3 save points 
+            if (Save +1 == 3)
+            {
+                result[i] = GetChoice(2); 
+            }
+        }
+
+        enemyChoise = result; 
+        return result; 
+
+
+        char GetChoice(int max)
+        {
+            // max should not exceed 3; 
+            int choice = random.Next(0,max); 
+
+            switch(choice)
+            {
+                case 0: 
+                return 'A'; 
+
+                case 1: 
+                return 'D'; 
+
+                case 2: 
+                return 'S'; 
+            }
+
+            return 'N';  // N for None 
         }
 
     }
