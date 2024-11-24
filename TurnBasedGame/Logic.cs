@@ -1,3 +1,4 @@
+using System.ComponentModel.Design;
 using System.Diagnostics;
 using System.Globalization;
 using System.Runtime.CompilerServices;
@@ -10,7 +11,7 @@ namespace Game;
 public class Match 
 {
     // player properties 
-    private PlayerClass privatePlayer = new PlayerClass(); 
+    private PlayerClass privatePlayer = new PlayerClass(30, 30); 
     private EnemyClass privateEnemy = new EnemyClass(); 
 
     public PlayerClass Player => privatePlayer; 
@@ -114,10 +115,6 @@ public class Match
             OnBadInput(new BadInputMessage("Enemy has played an illegal move, got more SAVE")); 
             return; 
         }
-        
-
-        // Total Damage taken By Player
-        privatePlayer.GotAttacked(calculatedEnemyMoves.totalAttack, calculatedPlayerMoves.totalDefence); 
 
         // Reveal Enemy's Move 
         CustomMessages.WriteBadMessageOneLine("\nEnemy's Choise: ");
@@ -125,6 +122,11 @@ public class Match
         WriteLine("\nPress Enter To See the result."); 
         ReadLine(); 
         
+
+
+        // Total Damage taken By Player
+        privatePlayer.GotAttacked(calculatedEnemyMoves.totalAttack, calculatedPlayerMoves.totalDefence); 
+
         // Check Player's health 
         if (privatePlayer.Health <= 0 )
         {
@@ -141,10 +143,6 @@ public class Match
             OnPlayerWon(EventArgs.Empty); 
             return; 
         }
-
-
-
-
     }
 
     (int totalAttack, int totalDefence, int totalSave) TotalPlayerADS(char[] moves)
@@ -157,30 +155,44 @@ public class Match
         int totalDefence = 0; 
         int totalSave = numberOfSave; 
 
-        // Check how many times player uses Attack and add multiplier
-        if (numberofAttack > 0)
+        // Check how many times player uses Attack and add multiplier        
+        char[] movesWithoutSave = moves
+            .Where(c => c == 'A' || c =='D')
+            .Select(c => c).ToArray(); 
+        
+        for(int i=0; i < movesWithoutSave.Length; i++)
         {
-            totalAttack = privatePlayer.Attack; 
-
-            // a multipliers will be added to the rest of the attacts
-            if (numberofAttack > 1)
+            if (i == 0)
             {
-                totalAttack += AddMultiplier(numberofAttack-1, privatePlayer.Attack); // -1 so that only second choice has multiplier
+                switch(movesWithoutSave[i])
+                {
+                    case 'A':
+                    totalAttack = privatePlayer.Attack; 
+                    break; 
+
+                    case 'D':
+                    totalDefence = privatePlayer.Defence; 
+                    break; 
+                }
+
+                continue; 
             }
+
+            switch(movesWithoutSave[i])
+            {
+                case 'A':
+                totalAttack += AddMultiplier(1, privatePlayer.Attack);
+                break; 
+
+                case 'D':
+                totalDefence += AddMultiplier(1, privatePlayer.Defence); 
+                break; 
+            }
+
         }
 
 
-        // Check for the number of times plyaer uses defence
-        if (numberOfDefence > 0)
-        {
-            totalDefence = privatePlayer.Defence; 
 
-            
-            if (numberOfDefence > 1)
-            {
-                totalDefence += AddMultiplier(numberOfDefence-1, privatePlayer.Defence); 
-            }
-        }
 
         int AddMultiplier(int numberOfAttacksOrDefences, int baseNumber)
         {
@@ -213,28 +225,39 @@ public class Match
         int totalSave = numberOfSave; 
 
         // Check how many times player uses Attack and add multiplier
-        if (numberofAttack > 0)
+        char[] movesWithoutSave = moves
+            .Where(c => c == 'A' || c =='D')
+            .Select(c => c).ToArray(); 
+        
+        for(int i=0; i < movesWithoutSave.Length; i++)
         {
-            totalAttack = privateEnemy.Attack; 
-
-            // a multipliers will be added to the rest of the attacts
-            if (numberofAttack > 1)
+            if (i == 0)
             {
-                totalAttack += AddMultiplier(numberofAttack -1, privateEnemy.Attack); 
+                switch(movesWithoutSave[i])
+                {
+                    case 'A':
+                    totalAttack = privateEnemy.Attack; 
+                    break; 
+
+                    case 'D':
+                    totalDefence = privateEnemy.Defence; 
+                    break; 
+                }
+
+                continue; 
             }
-        }
 
-
-        // Check for the number of times plyaer uses defence
-        if (numberOfDefence > 0)
-        {
-            totalDefence = privateEnemy.Defence; 
-
-            
-            if (numberOfDefence > 1)
+            switch(movesWithoutSave[i])
             {
-                totalDefence += AddMultiplier(numberOfDefence -1, privateEnemy.Defence); 
+                case 'A':
+                totalAttack += AddMultiplier(1, privateEnemy.Attack);
+                break; 
+
+                case 'D':
+                totalDefence += AddMultiplier(1, privateEnemy.Defence); 
+                break; 
             }
+
         }
 
         int AddMultiplier(int numberOfAttacksOrDefences, int baseNumber)
@@ -256,10 +279,11 @@ public class Match
 
 
 
-    public void MatchRestart()
+    public void MatchRestart(int level)
     {
         privatePlayer = new PlayerClass(); 
-        privateEnemy = new EnemyClass(); 
+        
+        privateEnemy = new EnemyClass(level * 100); // health is 100  
     }
 }
 
@@ -305,6 +329,14 @@ public class PlayerClass
 
     public int Save => save; 
 
+    public PlayerClass() {}
+    public PlayerClass(int startingHealth) => health = startingHealth;  
+    public PlayerClass(int startingAttack, int startingDefence)
+    {
+        attack = startingAttack; 
+        defence = startingDefence; 
+    }
+
     public bool TryToAddSingleSave()
     {
         if (save + 1 > 2)
@@ -318,12 +350,16 @@ public class PlayerClass
 
     public bool TryToAddAllSavePoints(int numberOfSavePoint)
     {
+        int totalPointsAdded = 0; 
         for(int i=0; i < numberOfSavePoint; i++)
         {
             if (!TryToAddSingleSave())
             {
+                save -= totalPointsAdded; 
                 return false; 
             }
+
+            totalPointsAdded++; 
         }
 
         return true; 
@@ -360,6 +396,8 @@ public class PlayerClass
 
 public class EnemyClass : PlayerClass 
 {
+    public EnemyClass() {}
+    public EnemyClass(int startingHealth) : base(startingHealth) {}
     // Make a event to notify what move enemy has choosen. 
     Random random = new Random(); 
 

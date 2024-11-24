@@ -34,6 +34,8 @@ public class App
     {
         bool quit = false; 
 
+        int level = 1; 
+
         Match match = new Match(); 
 
         // Assign event subscribers for notifications 
@@ -42,12 +44,12 @@ public class App
         // When player winds the match
         match.PlayerWon += (object? sender, EventArgs e) => UI.ShowGameMatch(new MatchStatus(match)); 
         match.PlayerWon += AppNotifications.PlayerWon; 
-        match.PlayerWon += (object? sender, EventArgs e ) => match.MatchRestart(); 
+        match.PlayerWon += (object? sender, EventArgs e ) => match.MatchRestart(++level); 
         
         // When player loses 
         match.PlayerLost += (object? sender, EventArgs e) => UI.ShowGameMatch(new MatchStatus(match)); 
         match.PlayerLost += AppNotifications.PlayerLost; 
-        match.PlayerLost += (object? sender, EventArgs e) => match.MatchRestart(); 
+        match.PlayerLost += (object? sender, EventArgs e) => match.MatchRestart(level); 
 
 
         // Main Game loop 

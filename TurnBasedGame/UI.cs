@@ -11,13 +11,15 @@ public static class UI
     Attack  : Reduces Enemy's Health.
 
     Defence : Can protect you from Enemy's Attack.
-    
+
     Save    : To Save your Turn Point to use it in next turn. 
               Using a save in next turn will add multiplier which means, 
               Your Attack will deal more damage and defence will be much stronger!
               However, using Save will leave you defenceless. 
 
              You can only stack up to 3 save points. 
+
+             
     """; 
 
     static string UserInput()
