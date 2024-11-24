@@ -30,8 +30,6 @@ public class Match
 
     public void UpdateMatch(string userInput)
     {
-        // Note for future implementation: count how many A and D you get to inclrease the attck or defence 
-        // first count the defence and then attack 
 
         bool isInputValid = IsInputValid(userInput, out char[] playerMove); 
 
@@ -52,6 +50,12 @@ public class Match
         if (moves.Length > 3)
         {
             OnBadInput(new BadInputMessage("You can only have Maximum of 3 moves")); 
+            return false; 
+        }
+
+        if (moves.Length < 1)
+        {
+            OnBadInput(new BadInputMessage("No Input Given, Please Choose your Move."));
             return false; 
         }
 
@@ -96,6 +100,14 @@ public class Match
         // Total Attack, Defence and savePoint of Player
         (int totalAttack, int totalDefence, int totalSave) calculatedPlayerMoves = TotalPlayerADS(playerMove); 
         (int totalAttack, int totalDefence, int totalSave) calculatedEnemyMoves = TotalEnemyADS(enemyMove); 
+
+        // Adjust the save point 
+        if (!privatePlayer.TryToAddAllSavePoints(calculatedPlayerMoves.totalSave))
+        {
+            OnBadInput(new BadInputMessage("You can not add more save points")); 
+            return; 
+        }
+        
 
         // Total Damage taken By Player
         privatePlayer.GotAttacked(calculatedEnemyMoves.totalAttack, calculatedPlayerMoves.totalDefence); 
@@ -163,7 +175,7 @@ public class Match
             for(int i=0; i < numberOfAttacksOrDefences; i++)
             {
                 privatePlayer.TakeSavePoint(); 
-                totalAttackorDefenceAfterBaseAttack *= (int)multipliers; 
+                totalAttackorDefenceAfterBaseAttack += multipliers * totalAttackorDefenceAfterBaseAttack; 
             }
 
             return (int)totalAttackorDefenceAfterBaseAttack; 
@@ -218,7 +230,7 @@ public class Match
             for(int i=0; i < numberOfAttacksOrDefences; i++)
             {
                 privateEnemy.TakeSavePoint(); 
-                totalAttackorDefenceAfterBaseAttack *= (int)multipliers; 
+                totalAttackorDefenceAfterBaseAttack += multipliers * totalAttackorDefenceAfterBaseAttack; 
             }
 
             return (int)totalAttackorDefenceAfterBaseAttack; 
@@ -289,6 +301,19 @@ public class PlayerClass
         return true; 
     }
 
+    public bool TryToAddAllSavePoints(int numberOfSavePoint)
+    {
+        for(int i=0; i < numberOfSavePoint; i++)
+        {
+            if (!TryToAddSingleSave())
+            {
+                return false; 
+            }
+        }
+
+        return true; 
+    }
+
     public void TakeSavePoint()
     {
         if (save - 1 >= 0)
@@ -320,6 +345,7 @@ public class PlayerClass
 
 public class EnemyClass : PlayerClass 
 {
+    // Make a event to notify what move enemy has choosen. 
     Random random = new Random(); 
     
     public char GetEnemyMove()
