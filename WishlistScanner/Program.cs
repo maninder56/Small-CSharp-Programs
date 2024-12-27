@@ -52,25 +52,10 @@ internal class ReadingWishList
     {
         using (StreamReader reader = new StreamReader(filePath)) 
         {
-            string? line = reader.ReadLine(); 
+            string? line = reader.ReadToEnd();         
 
-            List<string> gameNames = new List<string>(); 
-        
-            while (line != null)
-            {
-                MatchCollection matches = Regex.Matches(line ?? "", @"wishlist-list-item-0-tile#title"); 
-
-                if (matches.Count > 0)
-                {
-                    foreach(Match match in matches)
-                    {
-                        string extractedText = match.Groups[0].Value; 
-                        WriteLine("Match: {0}", extractedText); 
-                    }
-                }
-
-                line = reader.ReadLine(); 
-            }
+            
+            
         }
     }
 
