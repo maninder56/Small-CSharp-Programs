@@ -1,4 +1,7 @@
-﻿using System.Text.RegularExpressions;
+﻿using System.ComponentModel.DataAnnotations;
+using System.Globalization;
+using System.Net;
+using System.Text.RegularExpressions;
 using System.Xml.Linq;
 using static System.Console; 
 
@@ -14,6 +17,8 @@ internal class Program
 
         // wishList.WriteAllGamesName(); 
 
+        wishList.WriteAllGamesInfo();
+
 
         WriteLine(); 
     }
@@ -25,9 +30,9 @@ internal class Program
 internal class ReadingWishList
 {
     // readonly string filePath = Path.Combine(Environment.CurrentDirectory,"WishlistFiles", "Wishlist copy.html"); 
-    readonly string filePath = Path.Combine(Environment.CurrentDirectory,"WishlistFiles", "Wishlist.html"); 
+    readonly string filePath = Path.Combine(Environment.CurrentDirectory,"WishlistFiles", "Wishlist3.html"); 
     public bool doesFileExist { get; }
-
+    private List<GameInfo>? gameList { get; set; }
     public ReadingWishList()
     {
         doesFileExist = File.Exists(filePath); 
@@ -36,6 +41,8 @@ internal class ReadingWishList
         {
             throw new FileNotFoundException("File Does not Exists"); 
         }
+
+        gameList ??= GetAllGamesInfo();
     }
 
     public void WriteWishlistFile()
@@ -58,7 +65,7 @@ internal class ReadingWishList
 
             string namePattern = 
                 @"(?<=\d+-tile#title"">)" +     // Positive lookbehind
-                @"(?'GameName'.+?) " +          // To capture game name
+                @"(?'GameName'.+?)" +          // To capture game name
                 @"(?=<\/div>)";                 // Positive lookahead 
 
             Regex regex = new Regex(namePattern); 
@@ -85,7 +92,7 @@ internal class ReadingWishList
     // (?<=<li class=)(.+?)(?=<\/li>)
     // (?<=\d+-tile#title">)(.+?)(?=<\/div>)(.+?)(?<=class="psw-m-r-3">)(.+?)(?=<\/span)(.+?)(?=<\/span) -- sort of works
 
-    public List<GameInfo> GetAllGamesInfo()
+    private List<GameInfo> GetAllGamesInfo()
     {
         using (StreamReader reader = new StreamReader(filePath))
         {
@@ -108,36 +115,104 @@ internal class ReadingWishList
             foreach(Match match in gameFound)
             {
                 gameList.Add(new GameInfo(
-                    match.Groups["GameName"].Value,
-                    match.Groups["GamePrice"].Value,
-                    match.Groups["Discount"].Value
+                    match.Groups["GameName"].Value.Trim(),
+                    match.Groups["GamePrice"].Value.Trim(),
+                    match.Groups["Discount"].Value.Trim()
                 )); 
             }
             return gameList;
         }
     }
 
+    public void WriteAllGamesInfo()
+    {
+        List<GameInfo>? localGameList = gameList;
+        localGameList ??= GetAllGamesInfo();
+        
+        WriteLine("      {0,-50} {1,-20} {2,-10} {3}", "Name", "Current Price", "Discount", "Original Price"); 
+        int gameCount = 0; 
+        foreach(GameInfo game in localGameList)
+        {
+            WriteLine("{0,-4}: {1,-50} {2,-20} {3,-10} {4}",
+                ++gameCount, game.Name, game.CurrentPrice, game.Discounted, game.OriginalPrice); 
+        }
+
+        WriteLine("\nTotal Games saved in Wishlist: {0}", localGameList.Count); 
+        WriteLine("\nCurrent Cost of All Games: £{0}", localGameList.Sum(c => c.CurrentPrice)); 
+
+        IEnumerable<GameInfo> cheapestGames = localGameList.
+            Where(g => g.CurrentPrice == localGameList.Min(g => g.CurrentPrice));
+        WriteLine(); 
+        foreach(GameInfo game in cheapestGames)
+        {
+            WriteLine("Cheapest Game : {0} at £{1}", game.Name, game?.CurrentPrice); 
+        }
+
+        WriteLine(); 
+        GameInfo? highestSavingGame = GetHighestSavingsGame(); 
+        WriteLine("Game that provides highest Savings: {0} at £{1}, Total Savings: £{2}", 
+            highestSavingGame?.Name, highestSavingGame?.CurrentPrice, 
+            highestSavingGame?.OriginalPrice - highestSavingGame?.CurrentPrice); 
+        
+    }
+
+    GameInfo? GetHighestSavingsGame()
+    {
+        List<GameInfo>? localGameList = gameList;
+        localGameList ??= GetAllGamesInfo();
+        
+        GameInfo? highestSavingGame = null; 
+        decimal? mostSavings = 0; 
+
+        foreach(GameInfo game in localGameList)
+        {
+            if (game.Discounted)
+            {
+                decimal? totalSavingsFromThisGame = game.OriginalPrice - game.CurrentPrice; 
+                if (totalSavingsFromThisGame > mostSavings)
+                {
+                    mostSavings = totalSavingsFromThisGame; 
+                    highestSavingGame = game; 
+                }
+            }
+        }
+        return highestSavingGame; 
+    }
 }
 
 public class GameInfo
 {
     public string Name { get; set; }
-    public string? CurrentPrice { get; set; }
+    public decimal? CurrentPrice { get; set; }
     public bool Discounted { get; set; }
-    public string? OriginalPrice {get; set; }
+    public decimal? OriginalPrice {get; set; }
+    string? originalPriceText { get; set;}
     public GameInfo(string name, string price, string originalPrice)
     {
-        Name = name; 
-        CurrentPrice = price; 
+        Name = name.Contains("&amp;") ? 
+            name.Remove(name.IndexOf("&amp;"), "&amp;".Count()) : 
+            name; 
+
+        if (decimal.TryParse(price, NumberStyles.Currency, CultureInfo.GetCultureInfo("en-GB"), out _))
+        {
+            CurrentPrice = decimal.Parse(price, NumberStyles.Currency, CultureInfo.GetCultureInfo("en-GB")); 
+        }
         
         if (originalPrice.Contains("Original price"))
         {
             Discounted = true; 
 
-            OriginalPrice = originalPrice.Substring(
+            originalPriceText = originalPrice.Substring(
                 startIndex: originalPrice.IndexOf("Original price") + 
                 "Original price, ".Length
             ); 
+
+            if (decimal.TryParse(originalPriceText, NumberStyles.Currency, CultureInfo.GetCultureInfo("en-GB"), out _))
+            {
+                OriginalPrice = decimal.Parse(originalPriceText, 
+                    NumberStyles.Currency, CultureInfo.GetCultureInfo("en-GB")); 
+            }
+
         }
     } 
 }
