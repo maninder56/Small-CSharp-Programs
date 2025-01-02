@@ -30,7 +30,7 @@ internal class Program
 internal class ReadingWishList
 {
     // readonly string filePath = Path.Combine(Environment.CurrentDirectory,"WishlistFiles", "Wishlist copy.html"); 
-    readonly string filePath = Path.Combine(Environment.CurrentDirectory,"WishlistFiles", "Wishlist3.html"); 
+    readonly string filePath = Path.Combine(Environment.CurrentDirectory,"WishlistFiles", "Wishlist5.html"); 
     public bool doesFileExist { get; }
     private List<GameInfo>? gameList { get; set; }
     public ReadingWishList()
@@ -153,7 +153,18 @@ internal class ReadingWishList
         WriteLine("Game that provides highest Savings: {0} at £{1}, Total Savings: £{2}", 
             highestSavingGame?.Name, highestSavingGame?.CurrentPrice, 
             highestSavingGame?.OriginalPrice - highestSavingGame?.CurrentPrice); 
-        
+
+        decimal? gamesOnSalePrice = localGameList
+            .Where(g => g.Discounted)
+            .Sum(g => g.CurrentPrice); 
+        decimal? gamesOnSaleOriginalPrice = localGameList
+            .Where(g => g.Discounted)
+            .Sum(g => g.OriginalPrice); 
+        WriteLine(); 
+        WriteLine("Current Cost of All Games on Sale: £{0}, Total Savigns: £{1}, Total Without Sale: £{2}", 
+            gamesOnSalePrice, 
+            gamesOnSaleOriginalPrice - gamesOnSalePrice,
+            gamesOnSaleOriginalPrice); 
     }
 
     GameInfo? GetHighestSavingsGame()
