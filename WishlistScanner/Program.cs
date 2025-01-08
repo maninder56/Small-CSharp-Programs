@@ -30,7 +30,7 @@ internal class Program
 internal class ReadingWishList
 {
     // readonly string filePath = Path.Combine(Environment.CurrentDirectory,"WishlistFiles", "Wishlist copy.html"); 
-    readonly string filePath = Path.Combine(Environment.CurrentDirectory,"WishlistFiles", "Wishlist5.html"); 
+    readonly string filePath = Path.Combine(Environment.CurrentDirectory,"WishlistFiles", "Wishlist8.html"); 
     public bool doesFileExist { get; }
     private List<GameInfo>? gameList { get; set; }
     public ReadingWishList()
@@ -129,12 +129,13 @@ internal class ReadingWishList
         List<GameInfo>? localGameList = gameList;
         localGameList ??= GetAllGamesInfo();
         
-        WriteLine("      {0,-50} {1,-20} {2,-10} {3}", "Name", "Current Price", "Discount", "Original Price"); 
+        int highestGameNameLength = localGameList.Max(g => g.Name.Length);
+        WriteLine("      {0} {1,-20} {2,-10} {3}", "Name".PadRight(highestGameNameLength), "Current Price", "Discount", "Original Price"); 
         int gameCount = 0; 
         foreach(GameInfo game in localGameList)
         {
-            WriteLine("{0,-4}: {1,-50} {2,-20} {3,-10} {4}",
-                ++gameCount, game.Name, game.CurrentPrice, game.Discounted, game.OriginalPrice); 
+            WriteLine("{0,-4}: {1} {2,-20} {3,-10} {4}",
+                ++gameCount, game.Name.PadRight(highestGameNameLength), game.CurrentPrice, game.Discounted, game.OriginalPrice); 
         }
 
         WriteLine("\nTotal Games saved in Wishlist: {0}", localGameList.Count); 
@@ -145,7 +146,7 @@ internal class ReadingWishList
         WriteLine(); 
         foreach(GameInfo game in cheapestGames)
         {
-            WriteLine("Cheapest Game : {0} at £{1}", game.Name, game?.CurrentPrice); 
+            WriteLine("Cheapest Game : [{0}] {1} at £{2}", localGameList.IndexOf(game) +1, game.Name, game?.CurrentPrice); 
         }
 
         WriteLine(); 
