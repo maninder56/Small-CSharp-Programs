@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.13.35828.75 d17.13
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EquationsOnConsoleGraph", "EquationsOnConsoleGraph.csproj", "{33019E0D-CF29-4EFB-8AEF-D09E02938351}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{33019E0D-CF29-4EFB-8AEF-D09E02938351}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{33019E0D-CF29-4EFB-8AEF-D09E02938351}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{33019E0D-CF29-4EFB-8AEF-D09E02938351}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{33019E0D-CF29-4EFB-8AEF-D09E02938351}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {4AC9A0F9-73B4-4015-B920-642A3D8F645A}
+	EndGlobalSection
+EndGlobal
