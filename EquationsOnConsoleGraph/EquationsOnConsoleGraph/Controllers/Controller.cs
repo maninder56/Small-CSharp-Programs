@@ -12,6 +12,7 @@ class Controller
 {
     GraphService graphService; 
 
+    // need to create message class to incoporate type of message 
     StringBuilder message = new StringBuilder();
 
     public Controller (GraphService graphService) 
@@ -21,7 +22,16 @@ class Controller
 
     public bool Invoke()
     {
-        string userInput = MainView.Invoke(message);
+        // Check if console window dimentions have changed
+        //int currentWindowHeight = Console.WindowHeight;
+        //int currentWindowWidth = Console.WindowWidth;
+
+        //if (graphService.GetGraphHeight() != currentWindowHeight || graphService.GetGraphWidth() != currentWindowWidth)
+        //{
+        //    graphService.UpdateGraphInfo(height: currentWindowHeight, width: currentWindowWidth);
+        //}
+
+        string userInput = MainView.Invoke(graphService.GetNewGraphModel(), message);
         message.Clear();
 
         switch(userInput)

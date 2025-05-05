@@ -34,23 +34,50 @@ class GraphService
         width = width % 2 == 0 ? width -= 3 : width -= 2;
     }
 
+    public int GetGraphHeight() => graph.Height;
+    public int GetGraphWidth() => graph.Width;
+
 
     public void UpdateGraphInfo(int height, int width)
     {
         adjustGraphHeightForUserInput(ref height);
         adjustGraphToCentreZero(ref height, ref width);
 
-        graph.Height = height;
-        graph.Width = width;
-        graph.GraphPoints = new string[height, width];
+        graph.SetHeight(height);
+        graph.SetWidth(width);
+        graph.ResetGraphPoints();
+
+        // need to re draw equations after reseting graph
     }
 
     public GraphModel GetNewGraphModel()
     {
         graph.ResetGraphPoints();
 
-        // Plot x-axis
-        
+        int verticalCentre = (graph.Height - 1) / 2;
+        int horizontalCentre = (graph.Width - 1) / 2;
+
+        int numbersOnXAxisAfterZero = 1;
+        int numbersOnXAxisBeforeZero = -1;
+
+        graph.SetGraphPoint(verticalCentre, horizontalCentre, ".");
+        graph.SetGraphPoint(verticalCentre +1, horizontalCentre, "0");
+
+        // Plot x-axis points after zero
+        for (int w = horizontalCentre +10; w < graph.Width; w += 10)
+        {
+            graph.SetGraphPoint(verticalCentre, w, ".");
+            graph.SetGraphPoint(verticalCentre + 1, w, $"{numbersOnXAxisAfterZero++}"); 
+            
+        }
+
+        // Plot x-axis points before zero
+        for (int w = horizontalCentre -10; w > 0; w -= 10)
+        {
+            graph.SetGraphPoint(verticalCentre, w, ".");
+            graph.SetGraphPoint(verticalCentre + 1, w, $"{numbersOnXAxisBeforeZero--}");
+        }
+
 
         return graph;
     }

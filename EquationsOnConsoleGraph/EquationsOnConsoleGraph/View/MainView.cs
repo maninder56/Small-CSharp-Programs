@@ -15,13 +15,31 @@ internal static class MainView
     internal static string Invoke(GraphModel graphModel, StringBuilder message)
     {
         ClearConsoleView();
-        WriteLine(); 
+        WriteLine($"GraphProperties w:{graphModel.Width}, h:{graphModel.Height}");
+        WriteLine($"{WindowHeight} {WindowWidth}"); 
 
-        if (message.Length > 0)
-        {
-            WriteLine($"{message.ToString()}"); 
-        }
+        DrawGraph(graphModel); 
+        
 
         return GetUserInput(); 
+    }
+
+    private static void DrawGraph(GraphModel graphModel)
+    {
+        for(int h = 0; h < graphModel.Height;  h++)
+        {
+            for (int w = 0; w < graphModel.Width; w++)
+            {
+                if (string.IsNullOrEmpty(graphModel.GraphPoints[h, w]))
+                {
+                    Write(" "); 
+                }
+                else
+                {
+                    Write(graphModel.GraphPoints[h, w]);
+                }
+            }
+            WriteLine(); 
+        }
     }
 }

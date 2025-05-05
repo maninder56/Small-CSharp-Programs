@@ -33,15 +33,6 @@ class App
         {
             quit = controller.Invoke();
 
-            // Check if console window dimentions have changed
-            int currentWindowHeight = Console.WindowHeight; 
-            int currentWindowWidth = Console.WindowWidth;
-
-            if (windowHeight != currentWindowHeight || windowWidth != currentWindowWidth)
-            {
-                graphService.UpdateGraphInfo(height: currentWindowHeight, width: currentWindowWidth);
-            }
-
         } while(!quit);  
     }
 

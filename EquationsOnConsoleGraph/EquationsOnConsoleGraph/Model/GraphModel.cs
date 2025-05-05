@@ -8,11 +8,11 @@ namespace EquationsOnConsoleGraph.Model;
 
 class GraphModel
 {
-    public int Width { get; set; }
+    public int Width { get; private set; }
 
-    public int Height { get; set; }
+    public int Height { get; private set; }
 
-    public string[,] GraphPoints { get; set; }
+    public string[,] GraphPoints { get; private set; }
 
     public GraphModel(int height, int width)
     {
@@ -21,8 +21,14 @@ class GraphModel
         GraphPoints = new string[Height, Width]; 
     }
 
+    public void SetWidth(int width) => width = Width;
+
+    public void SetHeight(int height) => height = Height;
+
     public void ResetGraphPoints()
     {
         GraphPoints = new string[Height, Width];
     }
+
+    public void SetGraphPoint(int y, int x, string mark) => GraphPoints[y, x] = mark;
 }
