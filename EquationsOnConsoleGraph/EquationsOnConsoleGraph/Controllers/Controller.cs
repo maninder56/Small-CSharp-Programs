@@ -22,16 +22,9 @@ class Controller
 
     public bool Invoke()
     {
-        // Check if console window dimentions have changed
-        //int currentWindowHeight = Console.WindowHeight;
-        //int currentWindowWidth = Console.WindowWidth;
+        graphService.UpdateDimentionsIfChanged(); 
 
-        //if (graphService.GetGraphHeight() != currentWindowHeight || graphService.GetGraphWidth() != currentWindowWidth)
-        //{
-        //    graphService.UpdateGraphInfo(height: currentWindowHeight, width: currentWindowWidth);
-        //}
-
-        string userInput = MainView.Invoke(graphService.GetNewGraphModel(), message);
+        string userInput = MainView.Invoke(graphService.GetGraphModel(), message);
         message.Clear();
 
         switch(userInput)

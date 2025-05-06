@@ -23,7 +23,7 @@ class App
     
     public App()
     {
-        graphService = new GraphService(windowHeight, windowWidth);
+        graphService = new GraphService(height:windowHeight, width: windowWidth);
         controller = new Controller(graphService);
     }
 
@@ -33,7 +33,7 @@ class App
         {
             quit = controller.Invoke();
 
-        } while(!quit);  
+        } while (!quit);  
     }
 
 }

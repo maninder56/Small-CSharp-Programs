@@ -16,7 +16,7 @@ internal static class MainView
     {
         ClearConsoleView();
         WriteLine($"GraphProperties w:{graphModel.Width}, h:{graphModel.Height}");
-        WriteLine($"{WindowHeight} {WindowWidth}"); 
+        WriteLine($"Raw w:{WindowWidth}, h:{WindowHeight}");
 
         DrawGraph(graphModel); 
         
@@ -34,8 +34,9 @@ internal static class MainView
                 {
                     Write(" "); 
                 }
-                else
+                else // write else if statement to deal string with 2 length or more
                 {
+                    
                     Write(graphModel.GraphPoints[h, w]);
                 }
             }

@@ -21,9 +21,9 @@ class GraphModel
         GraphPoints = new string[Height, Width]; 
     }
 
-    public void SetWidth(int width) => width = Width;
+    public void SetWidth(int width) => this.Width = width;
 
-    public void SetHeight(int height) => height = Height;
+    public void SetHeight(int height) => this.Height = height;
 
     public void ResetGraphPoints()
     {
@@ -31,4 +31,6 @@ class GraphModel
     }
 
     public void SetGraphPoint(int y, int x, string mark) => GraphPoints[y, x] = mark;
+
+
 }
