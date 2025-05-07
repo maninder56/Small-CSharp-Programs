@@ -30,15 +30,29 @@ internal static class MainView
         {
             for (int w = 0; w < graphModel.Width; w++)
             {
-                if (string.IsNullOrEmpty(graphModel.GraphPoints[h, w]))
+                string currentSymbol = graphModel.GraphPoints[h, w];
+
+
+                if (string.IsNullOrEmpty(currentSymbol))
                 {
-                    Write(" "); 
+                    Write(" ");
+                    continue;
                 }
-                else // write else if statement to deal string with 2 length or more
+
+                if (currentSymbol.Length == 1)
                 {
-                    
-                    Write(graphModel.GraphPoints[h, w]);
+                    Write(currentSymbol);
+                    continue; 
                 }
+                if (currentSymbol.Length > 1)
+                {
+                    int numberToAdjustGraph = currentSymbol.Length - 1;
+
+                    Write(new string('\b', numberToAdjustGraph));
+                    Write(currentSymbol); 
+                    continue;
+                }
+
             }
             WriteLine(); 
         }

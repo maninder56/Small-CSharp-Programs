@@ -12,7 +12,13 @@ class GraphService
 {
     private GraphModel graph;
 
-    private int zoomLevel = 1; 
+    private int zoomLevel = 1;
+
+    // Number of spaces between 0 and 1 in X asix
+    private const int spaceNumberOnXAxis = 8;
+
+    // Number of spaces between 0 and 1 in Y asix
+    private const int spaceNumberOnYAxis = 5;
 
     public GraphService(int height, int width)
     {
@@ -27,41 +33,65 @@ class GraphService
     // Helper Methods 
 
     // To decrease height to make space for user Input
-    private void adjustGraphHeightForUserInput(ref int height) => height = height - 8; 
+    private void adjustGraphHeightForUserInput(ref int height) => height = height - 4; 
 
     // To decrease width to position zero in center
     private void adjustGraphToCentreZero(ref int height, ref int width)
     {
         height = height % 2 == 0 ? height -= 5 : height -= 4;
-        width = width % 2 == 0 ? width -= 5 : width -= 4;
+        width = width % 2 == 0 ? width -= 7 : width -= 6;
     }
 
     // Plot x and y axis 
     private void PlotXandYAxis()
     {
+        // To get the center of x and y axis
         int verticalCentre = (graph.Height - 1) / 2;
         int horizontalCentre = (graph.Width - 1) / 2;
+        
 
-        int numbersOnXAxisAfterZero = 1;
-        int numbersOnXAxisBeforeZero = -1;
-
+        // Set zero in the center of graph
         graph.SetGraphPoint(verticalCentre, horizontalCentre, ".");
         graph.SetGraphPoint(verticalCentre + 1, horizontalCentre, "0");
 
-        // Plot x-axis points after zero
-        for (int w = horizontalCentre + 10; w < graph.Width; w += 10)
+        // Numbers to plot on X axis
+        int numbersOnPositiveXAxis = 1;
+        int numbersOnNegativeXAxis = -1;
+        
+        // Plot positive x-axis points
+        for (int w = horizontalCentre + spaceNumberOnXAxis; w < graph.Width; w += spaceNumberOnXAxis)
         {
             graph.SetGraphPoint(verticalCentre, w, ".");
-            graph.SetGraphPoint(verticalCentre + 1, w, $"{numbersOnXAxisAfterZero++}");
+            graph.SetGraphPoint(verticalCentre + 1, w, $"{numbersOnPositiveXAxis++ * zoomLevel}");
 
         }
 
-        // Plot x-axis points before zero
-        for (int w = horizontalCentre - 10; w > 0; w -= 10)
+        // Plot negative x-axis points
+        for (int w = horizontalCentre - spaceNumberOnXAxis; w > 0; w -= spaceNumberOnXAxis)
         {
             graph.SetGraphPoint(verticalCentre, w, ".");
-            graph.SetGraphPoint(verticalCentre + 1, w, $"{numbersOnXAxisBeforeZero--}");
+            graph.SetGraphPoint(verticalCentre + 1, w, $"{numbersOnNegativeXAxis-- * zoomLevel}");
         }
+
+
+        // Numbers to plot on Y axis 
+        int numbersOnPositiveYAxis = 1;
+        int numbersOnNegativeYAxis = -1;
+
+        // Plot positive y-axis points
+        for (int h = verticalCentre - spaceNumberOnYAxis; h > 0; h -= spaceNumberOnYAxis)
+        {
+            graph.SetGraphPoint(h, horizontalCentre, ".");
+            graph.SetGraphPoint(h, horizontalCentre -1, $"{numbersOnPositiveYAxis++ * zoomLevel}"); 
+        }
+
+        // Plot negative y-axis points 
+        for (int h = verticalCentre + spaceNumberOnYAxis; h < graph.Height; h += spaceNumberOnYAxis)
+        {
+            graph.SetGraphPoint(h, horizontalCentre, ".");
+            graph.SetGraphPoint(h, horizontalCentre -1, $"{numbersOnNegativeYAxis-- * zoomLevel}");
+        }
+
     }
 
 
