@@ -44,6 +44,7 @@ internal static class MainView
                     Write(currentSymbol);
                     continue; 
                 }
+
                 if (currentSymbol.Length > 1)
                 {
                     int numberToAdjustGraph = currentSymbol.Length - 1;

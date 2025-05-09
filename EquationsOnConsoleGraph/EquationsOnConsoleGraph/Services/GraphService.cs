@@ -15,7 +15,7 @@ class GraphService
     private int zoomLevel = 1;
 
     // Number of spaces between 0 and 1 in X asix
-    private const int spaceNumberOnXAxis = 8;
+    private readonly int spaceNumberOnXAxis;
 
     // Number of spaces between 0 and 1 in Y asix
     private const int spaceNumberOnYAxis = 5;
@@ -26,6 +26,8 @@ class GraphService
         adjustGraphToCentreZero(ref height, ref width);
 
         graph = new GraphModel(height, width);
+
+        spaceNumberOnXAxis = spaceNumberOnYAxis * 2; 
 
         PlotXandYAxis(); 
     }
@@ -94,6 +96,12 @@ class GraphService
 
     }
 
+    // Plot Equation
+    private void PlotEquation()
+    {
+        
+    }
+
 
     // To get heigh and width of graph
     public int GetGraphHeight() => graph.Height;
@@ -137,7 +145,6 @@ class GraphService
 
     // Get Graph model 
     public GraphModel GetGraphModel() => graph;
-
 
 
 
