@@ -28,10 +28,10 @@ internal static class MainView
     {
         for(int h = 0; h < graphModel.Height;  h++)
         {
+            //Thread.Sleep(100);
             for (int w = 0; w < graphModel.Width; w++)
             {
                 string currentSymbol = graphModel.GraphPoints[h, w];
-
 
                 if (string.IsNullOrEmpty(currentSymbol))
                 {

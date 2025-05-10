@@ -1,6 +1,7 @@
 ﻿using EquationsOnConsoleGraph.Model;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -18,7 +19,7 @@ class GraphService
     private readonly int spaceNumberOnXAxis;
 
     // Number of spaces between 0 and 1 in Y asix
-    private const int spaceNumberOnYAxis = 5;
+    private const int spaceNumberOnYAxis = 4;
 
     public GraphService(int height, int width)
     {
@@ -35,7 +36,7 @@ class GraphService
     // Helper Methods 
 
     // To decrease height to make space for user Input
-    private void adjustGraphHeightForUserInput(ref int height) => height = height - 4; 
+    private void adjustGraphHeightForUserInput(ref int height) => height -= 4; 
 
     // To decrease width to position zero in center
     private void adjustGraphToCentreZero(ref int height, ref int width)
@@ -96,10 +97,62 @@ class GraphService
 
     }
 
+
     // Plot Equation
-    private void PlotEquation()
+    private void PlotEquations()
     {
-        
+        // To get the center of x and y axis
+        int verticalCentre = (graph.Height - 1) / 2;
+        int horizontalCentre = (graph.Width - 1) / 2;
+
+        // Numbers to plot on X axis
+        int numbersOnPositiveXAxis = 1;
+        int numbersOnNegativeXAxis = -1;
+
+
+        // Plot positive x-axis points
+        for (int x = horizontalCentre; x < graph.Width; x++)
+        {
+            // compute accurate value of y 
+            double accurateX = (double)numbersOnPositiveXAxis / (double)spaceNumberOnXAxis; 
+
+            // accurateX will go into function to get y
+
+            double accurateY = accurateX * (double)spaceNumberOnYAxis;
+            numbersOnPositiveXAxis++;
+
+            if (accurateY % 1 != 0)
+            {
+                continue; 
+            }
+
+            int y = verticalCentre - (int)accurateY; 
+
+            if (y < graph.Height && y > 0)
+            {
+                graph.SetGraphPoint(y, x, ".");
+            }
+        }
+
+        // Plot negative x-axis points
+        for (int x = horizontalCentre; x > 0; x--)
+        {
+            // compute accurate value of y 
+            double accurateY = ((double)numbersOnNegativeXAxis / (double)spaceNumberOnXAxis) * (double)spaceNumberOnYAxis;
+            numbersOnNegativeXAxis--;
+
+            if (accurateY % 1 != 0)
+            {
+                continue;
+            }
+
+            int y = verticalCentre - (int)accurateY;
+
+            if (y < graph.Height && y > 0)
+            {
+                graph.SetGraphPoint(y, x, ".");
+            }
+        }
     }
 
 
@@ -144,8 +197,14 @@ class GraphService
     }
 
     // Get Graph model 
-    public GraphModel GetGraphModel() => graph;
+    public GraphModel GetGraphModel()
+    {
+        // for testing only 
+        PlotEquations();
 
+        return graph;
+
+    }
 
 
     
