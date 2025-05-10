@@ -19,7 +19,7 @@ class GraphService
     private readonly int spaceNumberOnXAxis;
 
     // Number of spaces between 0 and 1 in Y asix
-    private const int spaceNumberOnYAxis = 4;
+    private const int spaceNumberOnYAxis = 5;
 
     public GraphService(int height, int width)
     {
@@ -110,6 +110,18 @@ class GraphService
         int numbersOnNegativeXAxis = -1;
 
 
+        double mainFunction(double x ) => (x-2) * (x+2)  * x;
+
+        // Test Functions
+        // f(x) = x
+        double function1(double x) => x;
+
+        // f(x) = x^2
+        //double function2(double x) => Math.Pow(x, 2);
+
+        // f(x) = x^3
+        //double function3(double x) => Math.Pow(x, 3);
+
         // Plot positive x-axis points
         for (int x = horizontalCentre; x < graph.Width; x++)
         {
@@ -118,13 +130,15 @@ class GraphService
 
             // accurateX will go into function to get y
 
-            double accurateY = accurateX * (double)spaceNumberOnYAxis;
+            // Math.Pow = x^2 = f(x)
+
+            double accurateY = mainFunction(accurateX) * (double)spaceNumberOnYAxis;
             numbersOnPositiveXAxis++;
 
-            if (accurateY % 1 != 0)
-            {
-                continue; 
-            }
+            //if (accurateY % 1 != 0)
+            //{
+            //    continue; 
+            //}
 
             int y = verticalCentre - (int)accurateY; 
 
@@ -138,13 +152,16 @@ class GraphService
         for (int x = horizontalCentre; x > 0; x--)
         {
             // compute accurate value of y 
-            double accurateY = ((double)numbersOnNegativeXAxis / (double)spaceNumberOnXAxis) * (double)spaceNumberOnYAxis;
+            double accurateX = (double)numbersOnNegativeXAxis / (double)spaceNumberOnXAxis; 
+
+            double accurateY = mainFunction(accurateX) * (double)spaceNumberOnYAxis;
+
             numbersOnNegativeXAxis--;
 
-            if (accurateY % 1 != 0)
-            {
-                continue;
-            }
+            //if (accurateY % 1 != 0)
+            //{
+            //    continue;
+            //}
 
             int y = verticalCentre - (int)accurateY;
 

@@ -32,6 +32,7 @@ class App
         do
         {
             quit = controller.Invoke();
+            quit = true; // For testing only
 
         } while (!quit);  
     }
