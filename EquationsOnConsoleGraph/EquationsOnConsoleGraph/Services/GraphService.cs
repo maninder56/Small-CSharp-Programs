@@ -111,6 +111,8 @@ class GraphService
 
 
         double mainFunction(double x ) => (x-2) * (x+2)  * x;
+        //double mainFunction(double x ) => (x*x) - (6*x) + 9;
+        
 
         // Test Functions
         // f(x) = x
