@@ -15,6 +15,8 @@ class GraphService
 
     private int zoomLevel = 1;
 
+    private List<Equation> equations;
+
     // Number of spaces between 0 and 1 in X asix
     private readonly int spaceNumberOnXAxis;
 
@@ -28,7 +30,16 @@ class GraphService
 
         graph = new GraphModel(height, width);
 
-        spaceNumberOnXAxis = spaceNumberOnYAxis * 2; 
+        spaceNumberOnXAxis = spaceNumberOnYAxis * 2;
+
+
+        // only for testing 
+        equations = new List<Equation>()
+        {
+            new Equation("x^2+2x-2"), 
+            new Equation("x^3-3x^2-10-x"), 
+            new Equation("x")
+        }; 
 
         PlotXandYAxis(); 
     }
@@ -112,11 +123,11 @@ class GraphService
 
         double mainFunction(double x ) => (x-2) * (x+2)  * x;
         //double mainFunction(double x ) => (x*x) - (6*x) + 9;
-        
+
 
         // Test Functions
         // f(x) = x
-        double function1(double x) => x;
+        //double function1(double x) => x;
 
         // f(x) = x^2
         //double function2(double x) => Math.Pow(x, 2);
@@ -134,7 +145,7 @@ class GraphService
 
             // Math.Pow = x^2 = f(x)
 
-            double accurateY = mainFunction(accurateX) * (double)spaceNumberOnYAxis;
+            double accurateY = equations[0].ComputY(accurateX) * (double)spaceNumberOnYAxis;
             numbersOnPositiveXAxis++;
 
             //if (accurateY % 1 != 0)
@@ -142,7 +153,7 @@ class GraphService
             //    continue; 
             //}
 
-            int y = verticalCentre - (int)accurateY; 
+            int y = verticalCentre - (int)Math.Round(accurateY); 
 
             if (y < graph.Height && y > 0)
             {
@@ -156,7 +167,7 @@ class GraphService
             // compute accurate value of y 
             double accurateX = (double)numbersOnNegativeXAxis / (double)spaceNumberOnXAxis; 
 
-            double accurateY = mainFunction(accurateX) * (double)spaceNumberOnYAxis;
+            double accurateY = equations[0].ComputY(accurateX) * (double)spaceNumberOnYAxis;
 
             numbersOnNegativeXAxis--;
 
@@ -165,7 +176,7 @@ class GraphService
             //    continue;
             //}
 
-            int y = verticalCentre - (int)accurateY;
+            int y = verticalCentre - (int)Math.Round(accurateY);
 
             if (y < graph.Height && y > 0)
             {
@@ -187,8 +198,7 @@ class GraphService
         graph.ResetGraphPoints();
 
         PlotXandYAxis(); 
-
-        // need to re draw equations after reseting graph
+        PlotEquations();
     }
 
     // Check if console window dimentions have changed

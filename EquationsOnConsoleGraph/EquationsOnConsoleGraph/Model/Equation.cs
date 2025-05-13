@@ -54,17 +54,157 @@ public class Equation
     }
 
 
-    // C
-    //public double ComputY(double x)
-    //{
-    //    double y = 0; 
+    // To compute each term
+    private double computeTerm(string term, double x)
+    {
+        double result = 0.0;
 
-    //    foreach (string term in terms)
-    //    {
-    //        for (int i = 0; i < term.Length; i++)
-    //        {
+        if (string.IsNullOrEmpty(term))
+        {
+            return 0;
+        }
 
-    //        }
-    //    }
-    //}
+        // check if term is negative or positive
+        bool isPositive = term[0] != '-';
+
+        if (term.Contains('-'))
+        {
+            term = term.Remove(term.IndexOf('-'), 1);
+        }
+
+        if (term.Contains('+'))
+        {
+            term = term.Remove(term.IndexOf('+'), 1);
+        }
+
+        // if x is not found then return number 
+        if (!term.Contains('x'))
+        {
+            if (double.TryParse(term, out double number))
+            {
+                if (isPositive)
+                {
+                    return number;
+                }
+                else
+                {
+                    return -number;
+                }
+            }
+        }
+
+        // if x is the only letter in equation
+        if (term.Contains('x') && term.Length == 1)
+        {
+            if (isPositive)
+            {
+                return x;
+            }
+            else
+            {
+                return -x;
+            }
+        }
+
+        // when term starts with x and has power 
+        if (term.StartsWith("x^"))
+        {
+            if (double.TryParse(term[(term.IndexOf('^') + 1)..], out double power))
+            {
+                result = Math.Pow(x, power);
+
+                if (isPositive)
+                {
+                    return result;
+                }
+                else
+                {
+                    return -result;
+                }
+            }
+        }
+
+
+        if (term.Contains("x^"))
+        {
+            double numberBeforeX = 1;
+
+            // capture the number
+            if (double.TryParse(term[..term.IndexOf('x')], out numberBeforeX))
+            {
+                term = term[term.IndexOf('x')..];
+
+                if (double.TryParse(term[(term.IndexOf('^') + 1)..], out double power))
+                {
+                    result = numberBeforeX * Math.Pow(x, power);
+
+                    if (isPositive)
+                    {
+                        return result;
+                    }
+                    else
+                    {
+                        return -result;
+                    }
+                }
+
+            }
+        }
+
+
+        if (term.Contains('x'))
+        {
+            double numberBeforeX = 1;
+
+            if (double.TryParse(term[..term.IndexOf('x')], out numberBeforeX))
+            {
+                result = numberBeforeX * x;
+
+                if (isPositive)
+                {
+                    return result;
+                }
+                else
+                {
+                    return -result;
+                }
+            }
+        }
+
+
+        return result;
+    }
+
+
+
+    // Computes y given x
+    public double ComputY(double x)
+    {
+        double y = 0.0;
+
+        foreach (string term in terms)
+        {
+            y += computeTerm(term, x); 
+        }
+
+        return y;
+    }
+
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
