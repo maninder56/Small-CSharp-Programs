@@ -32,5 +32,5 @@ class GraphModel
 
     public void SetGraphPoint(int y, int x, string mark) => GraphPoints[y, x] = mark;
 
-
+    public string? GetGraphPoint(int y, int x) => GraphPoints[y, x];
 }

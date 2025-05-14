@@ -24,6 +24,8 @@ class Controller
     {
         graphService.UpdateDimentionsIfChanged(); 
 
+        graphService.TestPlotAllEquations();
+
         string userInput = MainView.Invoke(graphService.GetGraphModel(), message);
         message.Clear();
 

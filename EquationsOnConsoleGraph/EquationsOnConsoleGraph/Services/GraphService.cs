@@ -13,15 +13,19 @@ class GraphService
 {
     private GraphModel graph;
 
-    private int zoomLevel = 1;
-
-    private List<Equation> equations;
+    private List<Equation> equationList = new List<Equation>()
+    {
+        // only for tests 
+        new Equation("x^2+2x-2"),
+        new Equation("x^3-x^2-x")
+    }; 
 
     // Number of spaces between 0 and 1 in X asix
     private readonly int spaceNumberOnXAxis;
 
     // Number of spaces between 0 and 1 in Y asix
-    private const int spaceNumberOnYAxis = 5;
+    private int spaceNumberOnYAxis = 10;
+
 
     public GraphService(int height, int width)
     {
@@ -32,18 +36,11 @@ class GraphService
 
         spaceNumberOnXAxis = spaceNumberOnYAxis * 2;
 
-
-        // only for testing 
-        equations = new List<Equation>()
-        {
-            new Equation("x^2+2x-2"), 
-            new Equation("x^3-3x^2-10-x"), 
-            new Equation("x")
-        }; 
-
         PlotXandYAxis(); 
     }
 
+
+    #region Helper Methods
     // Helper Methods 
 
     // To decrease height to make space for user Input
@@ -76,7 +73,7 @@ class GraphService
         for (int w = horizontalCentre + spaceNumberOnXAxis; w < graph.Width; w += spaceNumberOnXAxis)
         {
             graph.SetGraphPoint(verticalCentre, w, ".");
-            graph.SetGraphPoint(verticalCentre + 1, w, $"{numbersOnPositiveXAxis++ * zoomLevel}");
+            graph.SetGraphPoint(verticalCentre + 1, w, $"{numbersOnPositiveXAxis++}");
 
         }
 
@@ -84,7 +81,7 @@ class GraphService
         for (int w = horizontalCentre - spaceNumberOnXAxis; w > 0; w -= spaceNumberOnXAxis)
         {
             graph.SetGraphPoint(verticalCentre, w, ".");
-            graph.SetGraphPoint(verticalCentre + 1, w, $"{numbersOnNegativeXAxis-- * zoomLevel}");
+            graph.SetGraphPoint(verticalCentre + 1, w, $"{numbersOnNegativeXAxis--}");
         }
 
 
@@ -96,21 +93,21 @@ class GraphService
         for (int h = verticalCentre - spaceNumberOnYAxis; h > 0; h -= spaceNumberOnYAxis)
         {
             graph.SetGraphPoint(h, horizontalCentre, ".");
-            graph.SetGraphPoint(h, horizontalCentre -1, $"{numbersOnPositiveYAxis++ * zoomLevel}"); 
+            graph.SetGraphPoint(h, horizontalCentre -1, $"{numbersOnPositiveYAxis++}"); 
         }
 
         // Plot negative y-axis points 
         for (int h = verticalCentre + spaceNumberOnYAxis; h < graph.Height; h += spaceNumberOnYAxis)
         {
             graph.SetGraphPoint(h, horizontalCentre, ".");
-            graph.SetGraphPoint(h, horizontalCentre -1, $"{numbersOnNegativeYAxis-- * zoomLevel}");
+            graph.SetGraphPoint(h, horizontalCentre -1, $"{numbersOnNegativeYAxis--}");
         }
 
     }
 
 
     // Plot Equation
-    private void PlotEquations()
+    private void PlotEquation(Equation equation)
     {
         // To get the center of x and y axis
         int verticalCentre = (graph.Height - 1) / 2;
@@ -120,43 +117,29 @@ class GraphService
         int numbersOnPositiveXAxis = 1;
         int numbersOnNegativeXAxis = -1;
 
-
-        double mainFunction(double x ) => (x-2) * (x+2)  * x;
-        //double mainFunction(double x ) => (x*x) - (6*x) + 9;
-
-
-        // Test Functions
-        // f(x) = x
-        //double function1(double x) => x;
-
-        // f(x) = x^2
-        //double function2(double x) => Math.Pow(x, 2);
-
-        // f(x) = x^3
-        //double function3(double x) => Math.Pow(x, 3);
-
         // Plot positive x-axis points
         for (int x = horizontalCentre; x < graph.Width; x++)
         {
+            // x represents actual space of grid 
+            // accurateX and accurateY represents (x,y) adjusted to space
+
             // compute accurate value of y 
             double accurateX = (double)numbersOnPositiveXAxis / (double)spaceNumberOnXAxis; 
 
             // accurateX will go into function to get y
-
-            // Math.Pow = x^2 = f(x)
-
-            double accurateY = equations[0].ComputY(accurateX) * (double)spaceNumberOnYAxis;
+            double accurateY = equation.ComputY(accurateX) * (double)spaceNumberOnYAxis;
             numbersOnPositiveXAxis++;
 
-            //if (accurateY % 1 != 0)
-            //{
-            //    continue; 
-            //}
 
             int y = verticalCentre - (int)Math.Round(accurateY); 
 
             if (y < graph.Height && y > 0)
             {
+                if (!string.IsNullOrEmpty(graph.GetGraphPoint(y, x)))
+                {
+                    continue; 
+                }
+
                 graph.SetGraphPoint(y, x, ".");
             }
         }
@@ -167,25 +150,41 @@ class GraphService
             // compute accurate value of y 
             double accurateX = (double)numbersOnNegativeXAxis / (double)spaceNumberOnXAxis; 
 
-            double accurateY = equations[0].ComputY(accurateX) * (double)spaceNumberOnYAxis;
+            double accurateY = equation.ComputY(accurateX) * (double)spaceNumberOnYAxis;
 
             numbersOnNegativeXAxis--;
-
-            //if (accurateY % 1 != 0)
-            //{
-            //    continue;
-            //}
 
             int y = verticalCentre - (int)Math.Round(accurateY);
 
             if (y < graph.Height && y > 0)
             {
+                if (!string.IsNullOrEmpty(graph.GetGraphPoint(y, x)))
+                {
+                    continue;
+                }
+                    
                 graph.SetGraphPoint(y, x, ".");
             }
         }
     }
 
 
+    // Plot All Available Equations 
+    private void PlotAllEquations()
+    {
+        if (equationList.Count > 0)
+        {
+            foreach (Equation equation in equationList)
+            {
+                PlotEquation(equation);
+            }
+        }
+    }
+
+    #endregion
+
+
+    #region Public Methods
     // To get heigh and width of graph
     public int GetGraphHeight() => graph.Height;
     public int GetGraphWidth() => graph.Width;
@@ -198,7 +197,7 @@ class GraphService
         graph.ResetGraphPoints();
 
         PlotXandYAxis(); 
-        PlotEquations();
+        PlotAllEquations();
     }
 
     // Check if console window dimentions have changed
@@ -226,18 +225,40 @@ class GraphService
     }
 
     // Get Graph model 
-    public GraphModel GetGraphModel()
+    public GraphModel GetGraphModel() => graph;
+
+    // Add Equation to equationList and plot given equation
+    public void AddAndPlotEquation(Equation equation)
     {
-        // for testing only 
-        PlotEquations();
-
-        return graph;
-
+        equationList.Add(equation);
+        PlotEquation(equation);
     }
 
+    public void TestPlotAllEquations() => PlotAllEquations();// only for tests 
 
-    
 
+    // Set the zoom level to default 
+    // zoom level represents number of spaces between 0 and 1 
+    public void SetZoomLevelToDefault() => spaceNumberOnYAxis = 10;
 
+    // Increase zoom level
+    public void IncreasZoomLevel()
+    {
+        if (spaceNumberOnYAxis < 20)
+        {
+            spaceNumberOnYAxis += 5;
+        }
+    }
+
+    // Decrease zoom level 
+    public void DecreaseZoomLevel()
+    {
+        if (spaceNumberOnYAxis > 5)
+        {
+            spaceNumberOnYAxis -= 5;
+        }
+    }
+
+    #endregion
 
 }
