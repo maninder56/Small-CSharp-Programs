@@ -17,7 +17,7 @@ class GraphService
     {
         // only for tests 
         new Equation("x^2+2x-2"),
-        new Equation("x^3-x^2-x")
+        //new Equation("x^3-x^2-x")
     }; 
 
     // Number of spaces between 0 and 1 in X asix
