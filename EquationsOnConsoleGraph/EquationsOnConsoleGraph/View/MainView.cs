@@ -14,9 +14,9 @@ internal static class MainView
 {
     internal static string Invoke(GraphModel graphModel, StringBuilder message)
     {
-        //ClearConsoleView();
-        WriteLine($"GraphProperties w:{graphModel.Width}, h:{graphModel.Height}");
-        WriteLine($"Raw w:{WindowWidth}, h:{WindowHeight}");
+        ClearConsoleView();
+        //WriteLine($"GraphProperties w:{graphModel.Width}, h:{graphModel.Height}");
+        //WriteLine($"Raw w:{WindowWidth}, h:{WindowHeight}");
 
         DrawGraph(graphModel); 
         

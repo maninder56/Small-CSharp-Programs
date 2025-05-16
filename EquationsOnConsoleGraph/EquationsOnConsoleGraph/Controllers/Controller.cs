@@ -35,11 +35,14 @@ class Controller
                 return true;
 
             case "Help":
-            case "help":
+            case "h":
+                HelpView.Invoke(); 
                 return false;
 
             default:
                 return false;
         }
     }
+
+
 }
