@@ -58,14 +58,20 @@ public static class ValidationService
 
         if (term.Contains('-') || term.Contains('+'))
         {
-            message = $"Invalid term : {term}, term only has just sign or more then one"; 
+            message = $"Invalid Equation only one negative or positive sign is allowed"; 
             return false;
         }
 
         // If term does not contains x then it must be a number
         if (!term.Contains('x'))
         {
-            return double.TryParse(term, out _);
+            if (double.TryParse(term, out _))
+            {
+                message = $"{term} is not allowed"; 
+                return true; 
+            }
+
+            return false;
         }
 
         // If x is the only letter 
@@ -81,9 +87,15 @@ public static class ValidationService
 
             if (isPower)
             {
-                return power > 0.0;
+                if (power > 0.0)
+                {
+                    return true; 
+                }
+                message = $"{term} has negative power"; 
+                return false; 
             }
 
+            message = $"{term} is not allowed";
             return false;
         }
 
@@ -96,9 +108,16 @@ public static class ValidationService
 
             if (isPower)
             {
-                return power > 0.0 && isNumber;
+                if (power > 0.0 && isNumber)
+                {
+                    return true; 
+                }
+
+                message = $"{term} has negative power or number before x is invalid";
+                return false; 
             }
 
+            message = $"{term} is not allowed";
             return false;
         }
 
@@ -109,16 +128,23 @@ public static class ValidationService
             // anything after x 
             if (!string.IsNullOrEmpty(term[(term.IndexOf('x') + 1)..]))
             {
+                message = $"numbers to be multiplied by x are only allowed before x"; 
                 return false;
             }
 
-            return double.TryParse(term[..term.IndexOf('x')], out _);
+            if (double.TryParse(term[..term.IndexOf('x')], out _))
+            {
+                return true; 
+            }
+
+            message = $"{term} only numbers are allowed before x"; 
+            return false; 
+
         }
 
+        message = $"{term} is not Invalid";
         return false;
     }
-
-
 
 
 
@@ -143,8 +169,9 @@ public static class ValidationService
 
         foreach(string term in terms)
         {
-            if (!ValidateTerm(term))
+            if (!ValidateTerm(term, out string termValidationMessage))
             {
+                message = termValidationMessage; 
                 return false; 
             }
         }
