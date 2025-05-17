@@ -12,23 +12,32 @@ namespace EquationsOnConsoleGraph.View;
 
 internal static class MainView
 {
-    internal static string Invoke(GraphModel graphModel, StringBuilder message)
+    internal static string Invoke(GraphModel graphModel)
     {
         ClearConsoleView();
-        //WriteLine($"GraphProperties w:{graphModel.Width}, h:{graphModel.Height}");
-        //WriteLine($"Raw w:{WindowWidth}, h:{WindowHeight}");
 
-        DrawGraph(graphModel); 
+        DrawGraph(graphModel);
         
+        if (Message.MessagePending)
+        {
+            WriteLine();
+            WriteLineWithColor(Message.Color, Message.Content.ToString()); 
+            Message.ClearMessage();
+        }
 
+        WriteLine(); 
         return GetUserInput(); 
     }
 
     private static void DrawGraph(GraphModel graphModel)
     {
+        // extra space needed to center the graph
+        int extraSpace = 3; 
+
         for(int h = 0; h < graphModel.Height;  h++)
         {
             //Thread.Sleep(100);
+            Write(new string(' ', extraSpace));
             for (int w = 0; w < graphModel.Width; w++)
             {
                 string currentSymbol = graphModel.GraphPoints[h, w];

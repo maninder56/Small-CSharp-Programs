@@ -1,4 +1,5 @@
-﻿using EquationsOnConsoleGraph.Services;
+﻿using EquationsOnConsoleGraph.Model;
+using EquationsOnConsoleGraph.Services;
 using EquationsOnConsoleGraph.View;
 using System;
 using System.Collections.Generic;
@@ -12,9 +13,6 @@ class Controller
 {
     GraphService graphService; 
 
-    // need to create message class to incoporate type of message 
-    StringBuilder message = new StringBuilder();
-
     public Controller (GraphService graphService) 
     { 
         this.graphService = graphService;
@@ -24,10 +22,9 @@ class Controller
     {
         graphService.UpdateDimentionsIfChanged(); 
 
-        graphService.TestPlotAllEquations();
+        //graphService.TestPlotAllEquations();
 
-        string userInput = MainView.Invoke(graphService.GetGraphModel(), message);
-        message.Clear();
+        string userInput = MainView.Invoke(graphService.GetGraphModel());
 
         switch(userInput)
         {
@@ -39,10 +36,59 @@ class Controller
                 HelpView.Invoke(); 
                 return false;
 
+            case "zi":
+            case "ZoomIn":
+                ZoomInHandler();
+                return false;
+
+            case "zo":
+            case "ZoomOut":
+                ZoomOutHandler(); 
+                return false;
+
+            case "zd":
+            case "ZoomDefault": 
+                SetZoomToDefaultHandler();
+                return false;
+
+            case "Clear": 
+                ClearAllEquationsHandler();
+                return false;
+
             default:
+                Message.AddMessage(MessageType.Warning, "Incorrect Command"); 
                 return false;
         }
     }
+
+
+    // Command handlers
+
+    // ZoomIN 
+    private void ZoomInHandler()
+    {
+        graphService.IncreasZoomLevel(out string zoomMessage);
+
+        if(!string.IsNullOrEmpty(zoomMessage))
+        {
+            Message.AddMessage(MessageType.Warning, zoomMessage);
+        }
+    }
+
+    private void ZoomOutHandler()
+    {
+        graphService.DecreaseZoomLevel(out string zoomMessage);
+
+        if (!string.IsNullOrEmpty(zoomMessage))
+        {
+            Message.AddMessage(MessageType.Warning, zoomMessage);
+        }
+    }
+
+    private void SetZoomToDefaultHandler() => graphService.SetZoomLevelToDefault();
+
+    private void ClearAllEquationsHandler() => graphService.ClearGraphAndEquations(); 
+
 
 
 }

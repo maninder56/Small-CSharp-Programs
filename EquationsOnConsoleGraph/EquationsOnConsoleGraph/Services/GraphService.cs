@@ -21,7 +21,7 @@ class GraphService
     }; 
 
     // Number of spaces between 0 and 1 in X asix
-    private readonly int spaceNumberOnXAxis;
+    private int spaceNumberOnXAxis;
 
     // Number of spaces between 0 and 1 in Y asix
     private int spaceNumberOnYAxis = 10;
@@ -181,6 +181,14 @@ class GraphService
         }
     }
 
+    // Clear all points and set x and y asix 
+    private void ClearGraph()
+    {
+        graph.ResetGraphPoints();
+
+        PlotXandYAxis();
+    }
+
     #endregion
 
 
@@ -216,12 +224,10 @@ class GraphService
     }
 
 
-    // Clear all points and set x and y asix 
-    public void ClearGraph()
+    public void ClearGraphAndEquations()
     {
-        graph.ResetGraphPoints();
-
-        PlotXandYAxis(); 
+        ClearGraph();
+        equationList.Clear();
     }
 
     // Get Graph model 
@@ -239,24 +245,46 @@ class GraphService
 
     // Set the zoom level to default 
     // zoom level represents number of spaces between 0 and 1 
-    public void SetZoomLevelToDefault() => spaceNumberOnYAxis = 10;
+    public void SetZoomLevelToDefault()
+    {
+        spaceNumberOnYAxis = 10;
+        spaceNumberOnXAxis = spaceNumberOnYAxis * 2;
+        ClearGraph();
+        PlotAllEquations(); 
+    }
 
     // Increase zoom level
-    public void IncreasZoomLevel()
+    public void IncreasZoomLevel(out string message)
     {
         if (spaceNumberOnYAxis < 20)
         {
+            message = string.Empty;
             spaceNumberOnYAxis += 5;
+            spaceNumberOnXAxis = spaceNumberOnYAxis * 2;
+            ClearGraph();
+            PlotAllEquations();
+            return; 
         }
+
+        message = "Can not Zoom In Anyfurther";
+        return; 
     }
 
     // Decrease zoom level 
-    public void DecreaseZoomLevel()
+    public void DecreaseZoomLevel(out string message)
     {
         if (spaceNumberOnYAxis > 5)
         {
+            message = string.Empty;
             spaceNumberOnYAxis -= 5;
+            spaceNumberOnXAxis = spaceNumberOnYAxis * 2;
+            ClearGraph();
+            PlotAllEquations();
+            return;
         }
+
+        message = "Can not Zoom Out Anyfurther"; 
+        return;
     }
 
     #endregion

@@ -19,15 +19,16 @@ public static class HelpView
         WriteLine("""
             Commands : 
 
-            Quit            - To Quit
-            Help | h        - To open help 
+            Quit                - To Quit
+            Help | h            - To open help 
 
-            [Eqation]       - To Draw an eqation, only three equations at a time are allowed
+            [Eqation]           - To Draw an eqation, only three equations at a time are allowed
 
-            ZoomIn | zi     - To zoom in on a graph 
-            ZoomOut | zo    - To zoom out on a graph
+            ZoomIn | zi         - To zoom in on a graph 
+            ZoomOut | zo        - To zoom out on a graph
+            ZoomDefault | zd    - To set zoom to default
 
-            Clear           - To remove all the eqations from the graph
+            Clear               - To remove all the eqations from the graph
 
             """);
 
