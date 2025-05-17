@@ -34,12 +34,13 @@ class GraphService
         PlotXandYAxis(); 
     }
 
+    public List<Equation> GetEquationList() => equationList;
 
     #region Helper Methods
     // Helper Methods 
 
     // To decrease height to make space for user Input
-    private void adjustGraphHeightForUserInput(ref int height) => height -= 4; 
+    private void adjustGraphHeightForUserInput(ref int height) => height -= 5; 
 
     // To decrease width to position zero in center
     private void adjustGraphToCentreZero(ref int height, ref int width)
@@ -118,7 +119,7 @@ class GraphService
             // x represents actual space of grid 
             // accurateX and accurateY represents (x,y) adjusted to space
 
-            // compute accurate value of y 
+            // compute accurate value of x
             double accurateX = (double)numbersOnPositiveXAxis / (double)spaceNumberOnXAxis; 
 
             // accurateX will go into function to get y
@@ -142,7 +143,7 @@ class GraphService
         // Plot negative x-axis points
         for (int x = horizontalCentre; x > 0; x--)
         {
-            // compute accurate value of y 
+            // compute accurate value of x
             double accurateX = (double)numbersOnNegativeXAxis / (double)spaceNumberOnXAxis; 
 
             double accurateY = equation.ComputY(accurateX) * (double)spaceNumberOnYAxis;

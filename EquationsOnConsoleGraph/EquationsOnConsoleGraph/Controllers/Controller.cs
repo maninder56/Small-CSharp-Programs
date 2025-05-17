@@ -23,9 +23,7 @@ class Controller
     {
         graphService.UpdateDimentionsIfChanged(); 
 
-        //graphService.TestPlotAllEquations();
-
-        string userInput = MainView.Invoke(graphService.GetGraphModel());
+        string userInput = MainView.Invoke(graphService.GetGraphModel(), graphService.GetEquationList());
 
         string firstWord = getFirstWord(userInput);
 
@@ -71,7 +69,6 @@ class Controller
 
     // Command handlers
 
-    // ZoomIN 
     private void ZoomInHandler()
     {
         graphService.IncreasZoomLevel(out string zoomMessage);

@@ -12,11 +12,13 @@ namespace EquationsOnConsoleGraph.View;
 
 internal static class MainView
 {
-    internal static string Invoke(GraphModel graphModel)
+    internal static string Invoke(GraphModel graphModel, List<Equation> equationList)
     {
         ClearConsoleView();
 
         DrawGraph(graphModel);
+
+        WriteEquationList(equationList); 
         
         WriteLine(new string('-', WindowWidth)); 
 
@@ -67,5 +69,18 @@ internal static class MainView
             }
             WriteLine(); 
         }
+    }
+
+    private static void WriteEquationList(List<Equation> equationList)
+    {
+        WriteLine("Number of Equations: {0}", equationList.Count);
+
+        int count = 1; 
+
+        foreach(Equation equation in equationList)
+        {
+            WriteLine($"Equation {count++} : {equation.rawEquation}");
+        }
+
     }
 }
