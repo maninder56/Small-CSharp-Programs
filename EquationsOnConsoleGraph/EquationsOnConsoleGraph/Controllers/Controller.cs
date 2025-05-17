@@ -4,6 +4,7 @@ using EquationsOnConsoleGraph.View;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -26,7 +27,9 @@ class Controller
 
         string userInput = MainView.Invoke(graphService.GetGraphModel());
 
-        switch(userInput)
+        string firstWord = getFirstWord(userInput);
+
+        switch(firstWord)
         {
             case "Quit":
                 return true;
@@ -53,6 +56,10 @@ class Controller
 
             case "Clear": 
                 ClearAllEquationsHandler();
+                return false;
+
+            case "E":
+                DrawEquationHandler(userInput);
                 return false;
 
             default:
@@ -90,5 +97,53 @@ class Controller
     private void ClearAllEquationsHandler() => graphService.ClearGraphAndEquations(); 
 
 
+    private void DrawEquationHandler(string userInput)
+    {
+        // remove command word 
+        string equation = removeFirstWord(userInput);
+
+        if (string.IsNullOrEmpty(equation))
+        {
+            Message.AddMessage(MessageType.Warning, "No Eqation Given"); 
+            return; 
+        }
+
+        // Validate Equation
+        if (!ValidationService.ValidateEquation(equation, out string validationMessage))
+        {
+            Message.AddMessage(MessageType.Warning, validationMessage);
+            return; 
+        }
+
+        graphService.AddAndPlotEquation(equation, out string addEquationMessage); 
+
+        if (!string.IsNullOrEmpty(addEquationMessage))
+        {
+            Message.AddMessage(MessageType.Warning, addEquationMessage);
+            return; 
+        }
+    }
+
+
+    private string removeFirstWord(string userInput)
+    {
+        if (userInput.Length > 2)
+        {
+            return userInput.Remove(0, 2);
+        }
+
+        return string.Empty;
+    }
+
+
+    private string getFirstWord(string userInput)
+    {
+        if (userInput.IndexOf(' ') != -1)
+        {
+            return userInput.Substring(0, userInput.IndexOf(' '));
+        }
+
+        return userInput;
+    }
 
 }

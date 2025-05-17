@@ -13,12 +13,7 @@ class GraphService
 {
     private GraphModel graph;
 
-    private List<Equation> equationList = new List<Equation>()
-    {
-        // only for tests 
-        new Equation("x^2+2x-2"),
-        //new Equation("x^3-x^2-x")
-    }; 
+    private List<Equation> equationList = new List<Equation>(); 
 
     // Number of spaces between 0 and 1 in X asix
     private int spaceNumberOnXAxis;
@@ -197,6 +192,7 @@ class GraphService
     public int GetGraphHeight() => graph.Height;
     public int GetGraphWidth() => graph.Width;
 
+
     // Update graph dimentions 
     public void UpdateGraphInfo(int height, int width)
     {
@@ -234,10 +230,18 @@ class GraphService
     public GraphModel GetGraphModel() => graph;
 
     // Add Equation to equationList and plot given equation
-    public void AddAndPlotEquation(Equation equation)
+    public void AddAndPlotEquation(string equationFromUser, out string message)
     {
+        if (equationList.Count > 2)
+        {
+            message = "You can only have 3 Equations on the graph, Use 'Clear' Command to remove all equations"; 
+            return; 
+        }
+
+        Equation equation = new Equation(equationFromUser);
         equationList.Add(equation);
         PlotEquation(equation);
+        message = string.Empty; 
     }
 
     public void TestPlotAllEquations() => PlotAllEquations();// only for tests 
@@ -247,6 +251,11 @@ class GraphService
     // zoom level represents number of spaces between 0 and 1 
     public void SetZoomLevelToDefault()
     {
+        if (spaceNumberOnYAxis == 10)
+        {
+            return; 
+        }
+
         spaceNumberOnYAxis = 10;
         spaceNumberOnXAxis = spaceNumberOnYAxis * 2;
         ClearGraph();

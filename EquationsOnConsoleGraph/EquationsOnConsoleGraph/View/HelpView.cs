@@ -22,7 +22,7 @@ public static class HelpView
             Quit                - To Quit
             Help | h            - To open help 
 
-            [Eqation]           - To Draw an eqation, only three equations at a time are allowed
+            E [Eqation]         - To Draw an eqation, only three equations at a time are allowed
 
             ZoomIn | zi         - To zoom in on a graph 
             ZoomOut | zo        - To zoom out on a graph

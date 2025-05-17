@@ -8,6 +8,8 @@ namespace EquationsOnConsoleGraph.Model;
 
 public class Equation
 {
+    // Add properties to store eqation roots and when equation hits y axis
+
     List<string> terms; 
 
     public Equation(string equation)

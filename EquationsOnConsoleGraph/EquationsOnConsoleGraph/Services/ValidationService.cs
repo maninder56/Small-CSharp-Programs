@@ -128,7 +128,7 @@ public static class ValidationService
             // anything after x 
             if (!string.IsNullOrEmpty(term[(term.IndexOf('x') + 1)..]))
             {
-                message = $"numbers to be multiplied by x are only allowed before x"; 
+                message = $"Numbers to be multiplied by x are only allowed before x"; 
                 return false;
             }
 

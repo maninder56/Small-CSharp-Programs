@@ -18,14 +18,15 @@ internal static class MainView
 
         DrawGraph(graphModel);
         
+        WriteLine(new string('-', WindowWidth)); 
+
         if (Message.MessagePending)
         {
-            WriteLine();
-            WriteLineWithColor(Message.Color, Message.Content.ToString()); 
+            WriteLineWithColor(Message.Color, Message.Content.ToString());
             Message.ClearMessage();
         }
 
-        WriteLine(); 
+        WriteLine("Draw Eqation"); 
         return GetUserInput(); 
     }
 
